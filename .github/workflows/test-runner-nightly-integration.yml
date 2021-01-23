@@ -83,7 +83,7 @@ jobs:
           export ORG_GRADLE_PROJECT_workspacemanagerclientjar=$(find .. -type f -name "workspace-manager-client*.jar")
           echo "ORG_GRADLE_PROJECT_workspacemanagerclientjar = ${ORG_GRADLE_PROJECT_workspacemanagerclientjar}"
 
-      - name: Run the Basic Integration test suite 1
+      - name: Run the Basic Integration test suite
         run: |
           cd workspace-manager-clienttests
           echo "Test Runner config"
