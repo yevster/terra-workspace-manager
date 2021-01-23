@@ -90,5 +90,10 @@ jobs:
           ./render-config.sh ${{ steps.vault-token-step.outputs.vault-token }}
           echo "Running test suite"
           ./gradlew runTest --args="suites/BasicIntegration.json /tmp/TestRunnerResults"
+
+      - name: Upload test results
+        if: ${{ always() }}
+        run: |
+          cd workspace-manager-clienttests
           echo "Upload test results"
           ./gradlew uploadResults --args="TerraWSMDev.json /tmp/TestRunnerResults"
