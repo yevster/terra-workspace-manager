@@ -2,7 +2,6 @@ package scripts.uploadscripts;
 
 import bio.terra.testrunner.collector.MeasurementCollectionScript;
 import bio.terra.testrunner.collector.MeasurementCollector;
-import bio.terra.testrunner.common.utils.BigQueryUtils;
 import bio.terra.testrunner.runner.TestRunner;
 import bio.terra.testrunner.runner.TestScriptResult;
 import bio.terra.testrunner.runner.config.ServiceAccountSpecification;
@@ -66,7 +65,7 @@ public class SummariesToBigQuery extends UploadScript {
         // get a BigQuery client object
         logger.debug("BigQuery project_id:dataset_name: {}:{}", projectId, datasetName);
         BigQuery bigQueryClient =
-                BigQueryUtils.getClientForServiceAccount(uploaderServiceAccount, projectId);
+                BQUtils.getClientForServiceAccount(uploaderServiceAccount, projectId);
 
         // read in TestConfiguration TestRunSummary, and array of
         // MeasurementCollectionScript.MeasurementResultSummary objects
@@ -76,7 +75,7 @@ public class SummariesToBigQuery extends UploadScript {
                 MeasurementCollector.getMeasurementCollectionSummaries(outputDirectory);
 
         // insert a single row into testRun
-        if (BigQueryUtils.checkRowExists(
+        if (BQUtils.checkRowExists(
                 bigQueryClient, projectId, datasetName, testRunTableName, "id", testRunSummary.id)) {
             logger.info(
                     "A row with this id already exists in the "
@@ -86,7 +85,7 @@ public class SummariesToBigQuery extends UploadScript {
         TableId tableId = TableId.of(datasetName, testRunTableName);
         InsertAllRequest insertRequest =
                 InsertAllRequest.newBuilder(tableId).addRow(buildTestRunRow(outputDirectory)).build();
-        BigQueryUtils.insertAllIntoBigQuery(bigQueryClient, insertRequest);
+        BQUtils.insertAllIntoBigQuery(bigQueryClient, insertRequest);
 
         // insert into testScriptResults
         tableId = TableId.of(datasetName, testScriptResultsTableName);
@@ -99,7 +98,7 @@ public class SummariesToBigQuery extends UploadScript {
             insertRequestBuilder.addRow(
                     buildTestScriptResultsRow(testScriptSpecification, testScriptResult));
         }
-        BigQueryUtils.insertAllIntoBigQuery(bigQueryClient, insertRequestBuilder.build());
+        BQUtils.insertAllIntoBigQuery(bigQueryClient, insertRequestBuilder.build());
 
         // insert into measurementCollection
         if (measurementCollectionSummaries == null) {
@@ -111,7 +110,7 @@ public class SummariesToBigQuery extends UploadScript {
                     measurementCollectionSummaries) {
                 insertRequestBuilder.addRow(buildMeasurementCollectionRow(measurementResult));
             }
-            BigQueryUtils.insertAllIntoBigQuery(bigQueryClient, insertRequestBuilder.build());
+            BQUtils.insertAllIntoBigQuery(bigQueryClient, insertRequestBuilder.build());
         }
     }
 
