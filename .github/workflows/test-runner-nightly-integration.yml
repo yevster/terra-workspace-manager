@@ -96,4 +96,5 @@ jobs:
         run: |
           cd workspace-manager-clienttests
           echo "Upload test results"
+          more rendered/testrunner-service-account.json
           ./gradlew uploadResults --args="TerraWSMDev.json /tmp/TestRunnerResults"
