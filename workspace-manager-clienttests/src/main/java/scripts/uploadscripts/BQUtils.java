@@ -23,7 +23,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class BQUtils {
     private static final Logger logger = LoggerFactory.getLogger(BigQueryUtils.class);
-    public static final List<String> bigQueryScope = Collections.unmodifiableList(Arrays.asList("https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/devstorage.read_write"));
+    public static final List<String> bigQueryScope = Collections.unmodifiableList(Arrays.asList(
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/bigquery",
+            "https://www.googleapis.com/auth/accounts.reauth",
+            "https://www.googleapis.com/auth/devstorage.read_write"));
 
     private BQUtils() {
     }

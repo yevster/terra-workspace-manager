@@ -6,7 +6,8 @@ WM_APP_SERVICE_ACCOUNT_OUTPUT_PATH=$(dirname "$0")/rendered/workspace-manager-ap
 USER_DELEGATED_SERVICE_ACCOUNT_VAULT_PATH=secret/dsde/firecloud/dev/common/firecloud-account.json
 USER_DELEGATED_SERVICE_ACCOUNT_OUTPUT_PATH=$(dirname "$0")/rendered/user-delegated-service-account.json
 #TESTRUNNER_SERVICE_ACCOUNT_VAULT_PATH=secret/dsde/terra/kernel/dev/common/testrunner-sa
-TESTRUNNER_SERVICE_ACCOUNT_VAULT_PATH=secret/dsde/terra/kernel/dev/common/terra-testrunner-sa
+#TESTRUNNER_SERVICE_ACCOUNT_VAULT_PATH=secret/dsde/terra/kernel/dev/common/terra-testrunner-sa
+TESTRUNNER_SERVICE_ACCOUNT_VAULT_PATH=secret/dsde/firecloud/dev/common/firecloud-sa
 TESTRUNNER_SERVICE_ACCOUNT_OUTPUT_PATH=$(dirname "$0")/rendered/testrunner-service-account.json
 
 DSDE_TOOLBOX_DOCKER_IMAGE=broadinstitute/dsde-toolbox:consul-0.20.0
