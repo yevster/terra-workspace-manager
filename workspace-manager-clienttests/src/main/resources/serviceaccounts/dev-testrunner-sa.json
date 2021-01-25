@@ -1,5 +1,5 @@
 {
-  "name": "firecloud-dev@broad-dsde-dev.iam.gserviceaccount.com",
+  "name": "terra-testrunner-dev@broad-dsde-dev.iam.gserviceaccount.com",
   "jsonKeyFilename": "testrunner-service-account.json",
   "jsonKeyDirectoryPath": "./rendered"
 }
