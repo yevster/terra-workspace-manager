@@ -80,7 +80,7 @@ public class SamService {
    * reader and writer policies are also created. Errors from the Sam client will be thrown as
    * SamApiExceptions, which wrap the underlying error and expose its status code.
    */
-  @Traced
+  @Traced(name = "SamService.createWorkspaceWithDefaults")
   public void createWorkspaceWithDefaults(AuthenticatedUserRequest userReq, UUID id) {
     ResourcesApi resourceApi = samResourcesApi(userReq.getRequiredToken());
     // Sam will throw an error if no owner is specified, so the caller's email is required. It can
@@ -101,7 +101,7 @@ public class SamService {
     }
   }
 
-  @Traced
+  @Traced(name = "SamService.deleteWorkspace")
   public void deleteWorkspace(String authToken, UUID id) {
     ResourcesApi resourceApi = samResourcesApi(authToken);
     try {
@@ -112,7 +112,7 @@ public class SamService {
     }
   }
 
-  @Traced
+  @Traced(name = "SamService.isAuthorized")
   public boolean isAuthorized(
       String accessToken, String iamResourceType, String resourceId, String action) {
     ResourcesApi resourceApi = samResourcesApi(accessToken);
@@ -123,7 +123,7 @@ public class SamService {
     }
   }
 
-  @Traced
+  @Traced(name = "SamService.workspaceAuthzOnly")
   public void workspaceAuthzOnly(
       AuthenticatedUserRequest userReq, UUID workspaceId, String action) {
     boolean isAuthorized =
@@ -205,7 +205,7 @@ public class SamService {
    * <p>This operation is only available to MC_WORKSPACE stage workspaces, as Rawls manages
    * permissions directly on other workspaces.
    */
-  @Traced
+  @Traced(name = "SamService.listRoleBindings")
   public List<RoleBinding> listRoleBindings(UUID workspaceId, AuthenticatedUserRequest userReq) {
     workspaceDao.assertMcWorkspace(workspaceId, "listRoleBindings");
     workspaceAuthzOnly(userReq, workspaceId, SamConstants.SAM_WORKSPACE_READ_IAM_ACTION);
@@ -232,7 +232,7 @@ public class SamService {
    *
    * <p>This operation in Sam is idempotent, so we don't worry about calling this multiple times.
    */
-  @Traced
+  @Traced(name = "SamService.syncWorkspacePolicy")
   public String syncWorkspacePolicy(
       UUID workspaceId, IamRole role, AuthenticatedUserRequest userReq) {
     GoogleApi googleApi = samGoogleApi(userReq.getRequiredToken());

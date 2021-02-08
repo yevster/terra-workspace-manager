@@ -26,7 +26,7 @@ public class StackdriverTraceExporterConfig {
               .setCredentials(GoogleCredentials.getApplicationDefault())
               .setFixedAttributes(
                   Map.of(
-                      "/component",
+                      "terra/component",
                       AttributeValue.stringAttributeValue(
                           environment.getRequiredProperty("spring.application.name"))))
               .build());

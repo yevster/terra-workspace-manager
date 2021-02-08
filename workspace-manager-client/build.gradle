@@ -14,11 +14,14 @@ repositories {
 
 dependencies {
 	// Swagger deps, versions controlled by dependencyManagement in root project
+	implementation group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310"
+	implementation group: "io.opencensus", name: "opencensus-api"
+	implementation group: "io.opencensus", name: "opencensus-contrib-http-jaxrs"
+	implementation group: "io.swagger.core.v3", name: "swagger-annotations"
 	implementation group: "org.glassfish.jersey.core", name: "jersey-client"
 	implementation group: "org.glassfish.jersey.media", name: "jersey-media-json-jackson"
 	implementation group: "org.glassfish.jersey.media", name: "jersey-media-multipart"
-	implementation group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310"
-	implementation group: "io.swagger.core.v3", name: "swagger-annotations"
+
 	swaggerCodegen group: "io.swagger.codegen.v3", name: "swagger-codegen-cli"
 }
 

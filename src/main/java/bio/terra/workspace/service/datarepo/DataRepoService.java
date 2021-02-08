@@ -11,7 +11,10 @@ import bio.terra.workspace.generated.model.SystemStatusSystems;
 import bio.terra.workspace.service.datareference.exception.DataRepoAuthorizationException;
 import bio.terra.workspace.service.datareference.exception.DataRepoInternalServerErrorException;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
+import io.opencensus.contrib.http.jaxrs.JaxrsClientExtractor;
+import io.opencensus.contrib.http.jaxrs.JaxrsClientFilter;
 import io.opencensus.contrib.spring.aop.Traced;
+import io.opencensus.trace.Tracing;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,12 @@ public class DataRepoService {
         TraceInterceptorConfig.MDC_REQUEST_ID_HEADER,
         MDC.get(TraceInterceptorConfig.MDC_REQUEST_ID_KEY));
     client.setAccessToken(accessToken);
+    client
+        .getHttpClient()
+        .register(
+            new JaxrsClientFilter(
+                new JaxrsClientExtractor(), Tracing.getPropagationComponent().getB3Format()));
+
     return client;
   }
 
@@ -60,7 +69,7 @@ public class DataRepoService {
     }
   }
 
-  @Traced
+  @Traced(name = "DataRepoService.snapshotExists")
   public boolean snapshotExists(
       String instanceName, String snapshotId, AuthenticatedUserRequest userReq) {
     RepositoryApi repositoryApi = repositoryApi(instanceName, userReq);

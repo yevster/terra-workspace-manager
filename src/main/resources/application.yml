@@ -13,16 +13,21 @@ env:
       pass: ${DATABASE_USER_PASSWORD:wmpwd}
       user: ${DATABASE_USER:wmuser}
   tracing:
-    enabled: ${CLOUD_TRACE_ENABLED:false}
-    probability: ${SAMPLING_PROBABILITY:0}
-    project-id: ${SERVICE_GOOGLE_PROJECT:broad-dsde-dev}
+    enabled: ${CLOUD_TRACE_ENABLED:true}
+    probability: ${SAMPLING_PROBABILITY:1.0}
+    project-id: ${SERVICE_GOOGLE_PROJECT:terra-kernel-k8s}
   urls: # While we've traditionally thought of these as env specific and ok to hardcode, with kubernetes they may change
     sam: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org/}
     terra-datarepo: ${TERRA_DATAREPO_URL:https://jade.datarepo-dev.broadinstitute.org}
 
 # Below here is non-deployment-specific
 
-logging.pattern.level: '%X{requestId} %5p'
+logging:
+  pattern:
+    level: '%X{requestId} %5p'
+
+opencensus.spring.trace.propagation: TRACE_PROPAGATION_B3
+opencensus.spring.trace.publicEndpoint: true
 
 server:
   compression:

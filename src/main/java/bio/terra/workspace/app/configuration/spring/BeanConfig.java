@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.opencensus.contrib.spring.aop.CensusSpringAspect;
-import io.opencensus.contrib.spring.instrument.web.client.TracingAsyncClientHttpRequestInterceptor;
+import io.opencensus.contrib.spring.instrument.web.HttpServletFilter;
 import io.opencensus.trace.Tracer;
 import io.opencensus.trace.Tracing;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -24,14 +24,14 @@ public class BeanConfig {
     return Tracing.getTracer();
   }
 
-  @Bean // required for opencensus spring contrib, although not mentioned by any documentation
-  public TracingAsyncClientHttpRequestInterceptor requestInterceptor() {
-    return TracingAsyncClientHttpRequestInterceptor.create(null, null);
-  }
-
   @Bean // enables the @Traced annotation
   public CensusSpringAspect censusAspect() {
     return new CensusSpringAspect(tracer());
+  }
+
+  @Bean // Enable server-side span generation & inbound B3 propagation
+  HttpServletFilter httpServletFilter() {
+    return new HttpServletFilter();
   }
 
   @Bean("jdbcTemplate")

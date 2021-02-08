@@ -37,6 +37,12 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
+{{! Begin Terra change }}
+import io.opencensus.contrib.http.jaxrs.JaxrsClientFilter;
+import io.opencensus.contrib.http.jaxrs.JaxrsClientExtractor;
+import io.opencensus.trace.Tracing;
+{{! End Terra change }}
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -700,6 +706,12 @@ public class ApiClient {
     // Not using `.target(this.basePath).path(path)` below,
     // to support (constant) query string in `path`, e.g. "/posts?draft=1"
     WebTarget target = httpClient.target(this.basePath + path);
+
+    {{! Begin Terra change }}
+    target.register(new JaxrsClientFilter(
+        new JaxrsClientExtractor(),
+        Tracing.getPropagationComponent().getB3Format()));
+    {{! End Terra change }}
 
     if (queryParams != null) {
       for (Pair queryParam : queryParams) {

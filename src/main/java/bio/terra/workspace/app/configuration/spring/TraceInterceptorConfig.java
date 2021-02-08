@@ -13,9 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hashids.Hashids;
-import org.slf4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
@@ -24,8 +24,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@ConditionalOnProperty("workspace.tracing.enabled")
 public class TraceInterceptorConfig implements WebMvcConfigurer {
+
+  Logger log = LoggerFactory.getLogger(TraceInterceptorConfig.class);
 
   public static final String MDC_REQUEST_ID_HEADER = "X-Request-ID";
   public static final String MDC_REQUEST_ID_KEY = "requestId";
@@ -57,9 +58,9 @@ public class TraceInterceptorConfig implements WebMvcConfigurer {
             if (httpRequest.getRequestURI().startsWith("/api/")) {
               // get an mdc id from the request (if not found, create one), and pass it along in the
               // response
-              String requestId = getMDCRequestId(httpRequest);
-              MDC.put(MDC_REQUEST_ID_KEY, requestId);
-              httpResponse.addHeader(MDC_REQUEST_ID_HEADER, requestId);
+              String requestId = getMdcRequestId(httpRequest);
+              // MDC.put(MDC_REQUEST_ID_KEY, requestId);
+              // httpResponse.addHeader(MDC_REQUEST_ID_HEADER, requestId);
 
               // add tags to Stackdriver traces
               Tracing.getTracer()
@@ -89,7 +90,7 @@ public class TraceInterceptorConfig implements WebMvcConfigurer {
     return hashids.encode(generatedLong);
   }
 
-  private String getMDCRequestId(HttpServletRequest httpRequest) {
+  private String getMdcRequestId(HttpServletRequest httpRequest) {
     return getFirstNonNull(
         () -> httpRequest.getHeader(MDC_REQUEST_ID_HEADER),
         () -> httpRequest.getHeader(MDC_CORRELATION_ID_HEADER),

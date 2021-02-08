@@ -10,7 +10,10 @@ import bio.terra.workspace.app.configuration.external.BufferServiceConfiguration
 import bio.terra.workspace.app.configuration.spring.TraceInterceptorConfig;
 import bio.terra.workspace.service.buffer.exception.BufferServiceAPIException;
 import bio.terra.workspace.service.buffer.exception.BufferServiceAuthorizationException;
+import io.opencensus.contrib.http.jaxrs.JaxrsClientExtractor;
+import io.opencensus.contrib.http.jaxrs.JaxrsClientFilter;
 import io.opencensus.contrib.spring.aop.Traced;
+import io.opencensus.trace.Tracing;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,11 @@ public class BufferService {
         TraceInterceptorConfig.MDC_REQUEST_ID_HEADER,
         MDC.get(TraceInterceptorConfig.MDC_REQUEST_ID_KEY));
     client.setAccessToken(accessToken);
+    client
+        .getHttpClient()
+        .register(
+            new JaxrsClientFilter(
+                new JaxrsClientExtractor(), Tracing.getPropagationComponent().getB3Format()));
     return client;
   }
 
@@ -52,7 +60,7 @@ public class BufferService {
    *
    * @return PoolInfo
    */
-  @Traced
+  @Traced(name = "BufferService.getPoolInfo")
   public PoolInfo getPoolInfo() {
     try {
       BufferApi bufferApi = bufferApi(bufferServiceConfiguration.getInstanceUrl());
@@ -82,6 +90,7 @@ public class BufferService {
    * @param requestBody
    * @return ResourceInfo
    */
+  @Traced(name = "BufferService.handoutResource")
   public ResourceInfo handoutResource(HandoutRequestBody requestBody) {
     try {
       BufferApi bufferApi = bufferApi(bufferServiceConfiguration.getInstanceUrl());
