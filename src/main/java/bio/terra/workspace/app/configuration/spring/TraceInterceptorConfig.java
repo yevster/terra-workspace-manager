@@ -33,16 +33,6 @@ public class TraceInterceptorConfig implements WebMvcConfigurer {
 
   private final Hashids hashids = new Hashids("requestIdSalt", 8);
 
-  @Autowired
-  public TraceInterceptorConfig(TracingConfiguration tracingConfiguration) {
-
-    TraceConfig globalTraceConfig = Tracing.getTraceConfig();
-    globalTraceConfig.updateActiveTraceParams(
-        globalTraceConfig.getActiveTraceParams().toBuilder()
-            .setSampler(Samplers.probabilitySampler(tracingConfiguration.getProbability()))
-            .build());
-  }
-
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(
