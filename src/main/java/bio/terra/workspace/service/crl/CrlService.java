@@ -15,7 +15,7 @@ import bio.terra.workspace.service.crl.exception.CrlInternalException;
 import bio.terra.workspace.service.crl.exception.CrlNotInUseException;
 import bio.terra.workspace.service.crl.exception.CrlSecurityException;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
-import bio.terra.workspace.service.resource.reference.exception.InvalidReferenceException;
+import bio.terra.workspace.service.resource.referenced.exception.InvalidReferenceException;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Duration;
+import javax.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -96,11 +98,14 @@ public class CrlService {
   }
 
   /** @return CRL {@link BigQueryCow} which wraps Google BigQuery API */
-  public BigQueryCow createBigQueryCow(AuthenticatedUserRequest userReq) {
+  public BigQueryCow createBigQueryCow(String projectId, AuthenticatedUserRequest userReq) {
     assertCrlInUse();
     return new BigQueryCow(
         clientConfig,
-        BigQueryOptions.newBuilder().setCredentials(googleCredentialsFromUserReq(userReq)).build());
+        BigQueryOptions.newBuilder()
+            .setCredentials(googleCredentialsFromUserReq(userReq))
+            .setProjectId(projectId)
+            .build());
   }
 
   /**
@@ -108,7 +113,7 @@ public class CrlService {
    * service and generate an answer without actually touching BigQuery.
    *
    * @param projectId Google project id where the dataset is
-   * @param datasetId name of the dataset
+   * @param datasetName name of the dataset
    * @param userRequest auth info
    * @return true if the dataset exists
    */
@@ -118,20 +123,48 @@ public class CrlService {
       DatasetId datasetId = DatasetId.of(projectId, datasetName);
       // BigQueryCow.get() returns null if the bucket does not exist or a user does not have access,
       // which fails validation.
-      DatasetCow dataset = createBigQueryCow(userRequest).getDataset(datasetId);
+      DatasetCow dataset = createBigQueryCow(projectId, userRequest).getDataset(datasetId);
       return (dataset != null);
     } catch (BigQueryException e) {
       throw new InvalidReferenceException("Error while trying to access BigQuery dataset", e);
     }
   }
 
-  /** @return CRL {@link StorageCow} which wraps Google Cloud Storage API */
-  public StorageCow createStorageCow(AuthenticatedUserRequest userReq) {
+  /**
+   * This creates a storage COW that will operate with WSM credentials optionally in a specific
+   * project.
+   *
+   * @param projectId optional GCP project
+   * @return CRL {@link StorageCow} which wraps Google Cloud Storage API
+   */
+  public StorageCow createStorageCow(@Nullable String projectId) {
+    return createStorageCowWorker(projectId, null);
+  }
+
+  /**
+   * This creates a storage COW that will operate with the user's credentials.
+   *
+   * @param projectId optional GCP project
+   * @param userReq user auth
+   * @return CRL {@link StorageCow} which wraps Google Cloud Storage API in the given project using
+   *     provided user credentials.
+   */
+  public StorageCow createStorageCow(@Nullable String projectId, AuthenticatedUserRequest userReq) {
+    return createStorageCowWorker(projectId, userReq);
+  }
+
+  private StorageCow createStorageCowWorker(
+      @Nullable String projectId, @Nullable AuthenticatedUserRequest userReq) {
     assertCrlInUse();
 
-    return new StorageCow(
-        clientConfig,
-        StorageOptions.newBuilder().setCredentials(googleCredentialsFromUserReq(userReq)).build());
+    StorageOptions.Builder optionsBuilder = StorageOptions.newBuilder();
+    if (userReq != null) {
+      optionsBuilder.setCredentials(googleCredentialsFromUserReq(userReq));
+    }
+    if (!StringUtils.isEmpty(projectId)) {
+      optionsBuilder.setProjectId(projectId);
+    }
+    return new StorageCow(clientConfig, optionsBuilder.build());
   }
 
   /**
@@ -144,7 +177,7 @@ public class CrlService {
    */
   public boolean gcsBucketExists(String bucketName, AuthenticatedUserRequest userRequest) {
     try {
-      BucketCow bucket = createStorageCow(userRequest).get(bucketName);
+      BucketCow bucket = createStorageCow(null, userRequest).get(bucketName);
       return (bucket != null);
     } catch (StorageException e) {
       throw new InvalidReferenceException(

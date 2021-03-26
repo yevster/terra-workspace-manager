@@ -97,6 +97,29 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update an existing Workspace.
+      operationId: updateWorkspace
+      tags: [Workspace]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkspaceRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceDescription'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
     delete:
       summary: Delete a Workspace.
       operationId: deleteWorkspace
@@ -118,6 +141,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/WorkspaceId'
     post:
+      deprecated: true
       summary: (DEPRECATED) Create a new data reference in a workspace.
       operationId: createDataReference
       tags: [Workspace]
@@ -140,6 +164,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     get:
+      deprecated: true
       summary: (DEPRECATED) Enumerate the data references in a workspace.
       operationId: enumerateReferences
       tags: [Workspace]
@@ -164,6 +189,7 @@ paths:
       - $ref: '#/components/parameters/WorkspaceId'
       - $ref: '#/components/parameters/ReferenceId'
     get:
+      deprecated: true
       summary: (DEPRECATED) Gets a data reference from a workspace.
       operationId: getDataReference
       tags: [Workspace]
@@ -177,6 +203,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
+      deprecated: true
       summary: (DEPRECATED) Update name or description of a data reference in a workspace.
       operationId: updateDataReference
       tags: [Workspace]
@@ -196,6 +223,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
+      deprecated: true
       summary: (DEPRECATED) Deletes a data reference from a workspace.
       operationId: deleteDataReference
       tags: [Workspace]
@@ -216,6 +244,7 @@ paths:
       - $ref: '#/components/parameters/ReferenceType'
       - $ref: '#/components/parameters/Name'
     get:
+      deprecated: true
       summary: (DEPRECATED) Gets a data reference from a workspace by name and type.
       operationId: getDataReferenceByName
       tags: [Workspace]
@@ -229,13 +258,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/datarepo/snapshots:
+
+  /api/workspaces/v1/{workspaceId}/resources/referenced/datarepo/snapshots:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
     post:
       summary: Create a new data repo snapshot reference in a workspace.
       operationId: createDataRepoSnapshotReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
@@ -254,14 +284,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/datarepo/snapshots/{referenceId}:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/datarepo/snapshots/{resourceId}:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
-    - $ref: '#/components/parameters/ReferenceId'
+    - $ref: '#/components/parameters/ResourceId'
     get:
       summary: Gets a reference to a snapshot from a workspace.
       operationId: getDataRepoSnapshotReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       responses:
         '200':
           $ref: '#/components/responses/DataRepoSnapshotReferenceResponse'
@@ -274,7 +304,7 @@ paths:
     patch:
       summary: Update name or description of a snapshot reference in a workspace.
       operationId: updateDataRepoSnapshotReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
@@ -290,15 +320,28 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete datarepo snapshot reference
+      operationId: deleteDataRepoSnapshotReference
+      tags: [ReferencedGcpResource]
+      responses:
+        '204':
+          description: OK
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/datarepo/snapshots/name/{name}:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/datarepo/snapshots/name/{name}:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
     - $ref: '#/components/parameters/Name'
     get:
       summary: Gets a reference to a snapshot by name.
       operationId: getDataRepoSnapshotReferenceByName
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       responses:
         '200':
           $ref: '#/components/responses/DataRepoSnapshotReferenceResponse'
@@ -309,22 +352,22 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/google/buckets:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/buckets:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
     post:
-      summary: Create a new Google bucket reference in a workspace.
+      summary: Create a new GCS bucket reference in a workspace.
       operationId: createBucketReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateGoogleBucketReferenceRequestBody'
+              $ref: '#/components/schemas/CreateGcsBucketReferenceRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/GoogleBucketReferenceResponse'
+          $ref: '#/components/responses/GcsBucketReferenceResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -334,17 +377,17 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/google/buckets/{referenceId}:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/buckets/{resourceId}:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
-    - $ref: '#/components/parameters/ReferenceId'
+    - $ref: '#/components/parameters/ResourceId'
     get:
-      summary: Gets a reference to a Google bucket from a workspace.
+      summary: Gets a reference to a bucket from a workspace.
       operationId: getBucketReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       responses:
         '200':
-          $ref: '#/components/responses/GoogleBucketReferenceResponse'
+          $ref: '#/components/responses/GcsBucketReferenceResponse'
         '403':
           $ref: '#/components/responses/PermissionDenied'
         '404':
@@ -354,7 +397,7 @@ paths:
     patch:
       summary: Update name or description of a bucket reference in a workspace.
       operationId: updateBucketReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
@@ -370,18 +413,13 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-
-  /api/workspaces/v1/{workspaceId}/resources/references/google/buckets/name/{name}:
-    parameters:
-    - $ref: '#/components/parameters/WorkspaceId'
-    - $ref: '#/components/parameters/Name'
-    get:
-      summary: Gets a reference to a Google bucket by name.
-      operationId: getBucketReferenceByName
-      tags: [Reference]
+    delete:
+      summary: Delete Gcp bucket reference
+      operationId: deleteBucketReference
+      tags: [ReferencedGcpResource]
       responses:
-        '200':
-          $ref: '#/components/responses/GoogleBucketReferenceResponse'
+        '204':
+          description: OK
         '403':
           $ref: '#/components/responses/PermissionDenied'
         '404':
@@ -389,13 +427,31 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/google/bigquerydatasets:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/buckets/name/{name}:
+    parameters:
+    - $ref: '#/components/parameters/WorkspaceId'
+    - $ref: '#/components/parameters/Name'
+    get:
+      summary: Gets a reference to a Gcp bucket by name.
+      operationId: getBucketReferenceByName
+      tags: [ReferencedGcpResource]
+      responses:
+        '200':
+          $ref: '#/components/responses/GcsBucketReferenceResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/bigquerydatasets:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
     post:
       summary: Create a new BigQuery dataset reference in a workspace.
       operationId: createBigQueryDatasetReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
@@ -414,14 +470,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/google/bigquerydatasets/{referenceId}:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/bigquerydatasets/{resourceId}:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
-    - $ref: '#/components/parameters/ReferenceId'
+    - $ref: '#/components/parameters/ResourceId'
     get:
       summary: Gets a reference to a BigQuery dataset from a workspace.
       operationId: getBigQueryDatasetReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       responses:
         '200':
           $ref: '#/components/responses/BigQueryDatasetReferenceResponse'
@@ -434,7 +490,7 @@ paths:
     patch:
       summary: Update name or description of a BigQuery dataset reference in a workspace.
       operationId: updateBigQueryDatasetReference
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       requestBody:
         required: true
         content:
@@ -450,15 +506,28 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete BigQuery dataset reference
+      operationId: deleteBigQueryDatasetReference
+      tags: [ReferencedGcpResource]
+      responses:
+        '204':
+          description: OK
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
-  /api/workspaces/v1/{workspaceId}/resources/references/google/bigquerydatasets/name/{name}:
+  /api/workspaces/v1/{workspaceId}/resources/referenced/gcp/bigquerydatasets/name/{name}:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
     - $ref: '#/components/parameters/Name'
     get:
       summary: Gets a reference to a BigQuery dataset by name.
       operationId: getBigQueryDatasetReferenceByName
-      tags: [Reference]
+      tags: [ReferencedGcpResource]
       responses:
         '200':
           $ref: '#/components/responses/BigQueryDatasetReferenceResponse'
@@ -637,58 +706,101 @@ paths:
         404:
           $ref: '#/components/responses/NotFound'
 
-  /api/workspaces/v1/{workspaceId}/resources/controlled/google/buckets:
+  /api/workspaces/v1/{workspaceId}/resources/controlled/gcp/buckets:
     parameters:
       - $ref: '#/components/parameters/WorkspaceId'
     post:
-      summary: Create a new controlled Google bucket
+      summary: Create a new controlled Gcp bucket
       operationId: createBucket
-      tags: [ControlledGoogleResource]
+      tags: [ControlledGcpResource]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateControlledGoogleBucketRequestBody'
+              $ref: '#/components/schemas/CreateControlledGcsBucketRequestBody'
       responses:
         '200':
-          $ref: '#/components/responses/CreatedControlledGoogleBucketResponse'
+          $ref: '#/components/responses/CreatedControlledGcsBucketResponse'
         '202':
-          $ref: '#/components/responses/CreatedControlledGoogleBucketResponse'
+          $ref: '#/components/responses/CreatedControlledGcsBucketResponse'
         '403':
           $ref: '#/components/responses/PermissionDenied'
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/workspaces/v1/{workspaceId}/resources/controlled/google/buckets/{resourceId}:
+
+  /api/workspaces/v1/{workspaceId}/resources/controlled/gcp/buckets/result/{jobId}:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+      - $ref: '#/components/parameters/JobId'
+    get:
+      summary: Retrieve information about a gcp bucket creation job.
+      operationId: getCreateBucketResult
+      tags: [ControlledGcpResource]
+      responses:
+        '200':
+          $ref: '#/components/responses/CreatedControlledGcsBucketResponse'
+        '202':
+          $ref: '#/components/responses/CreatedControlledGcsBucketResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/workspaces/v1/{workspaceId}/resources/controlled/gcp/buckets/{resourceId}:
     parameters:
       - $ref: '#/components/parameters/WorkspaceId'
       - $ref: '#/components/parameters/ResourceId'
     get:
       summary: get a controlled GCS bucket resource
       operationId: getBucket
-      tags: [ControlledGoogleResource]
+      tags: [ControlledGcpResource]
       responses:
         '200':
-          $ref: '#/components/responses/GetControlledGoogleBucketResponse'
+          $ref: '#/components/responses/GetControlledGcsBucketResponse'
         '403':
           $ref: '#/components/responses/PermissionDenied'
         404:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/workspaces/v1/{workspaceId}/resources/controlled/google/buckets/result/{jobId}:
+    post:
+      summary: |
+        Delete a controlled GCS bucket resource. This is async, because deleting the bucket and contents can
+        take a very long time. NOTE: this cannot be an HTTP DELETE, because something between generated code
+        and server behavior does not support delete operations with bodies. We require the body for the async
+        state, so this is a POST.
+      operationId: deleteBucket
+      tags: [ControlledGcpResource]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteControlledGcsBucketRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/DeleteControlledGcsBucketResponse'
+        '202':
+          $ref: '#/components/responses/DeleteControlledGcsBucketResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/workspaces/v1/{workspaceId}/resources/controlled/gcp/buckets/delete-result/{jobId}:
     parameters:
       - $ref: '#/components/parameters/WorkspaceId'
       - $ref: '#/components/parameters/JobId'
     get:
-      summary: Retrieve information about a google bucket creation job.
-      operationId: getCreateBucketResult
-      tags: [ControlledGoogleResource]
+      summary: Retrieve information about a gcp bucket creation job.
+      operationId: getDeleteBucketResult
+      tags: [ControlledGcpResource]
       responses:
         '200':
-          $ref: '#/components/responses/CreatedControlledGoogleBucketResponse'
+          $ref: '#/components/responses/DeleteControlledGcsBucketResponse'
         '202':
-          $ref: '#/components/responses/CreatedControlledGoogleBucketResponse'
+          $ref: '#/components/responses/DeleteControlledGcsBucketResponse'
         '403':
           $ref: '#/components/responses/PermissionDenied'
         '500':
@@ -731,6 +843,7 @@ components:
         minimum: 1
         default: 10
 
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
     ReferenceId:
       name: referenceId
       in: path
@@ -740,6 +853,15 @@ components:
         type: string
         format: uuid
 
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    ReferenceType:
+      name: referenceType
+      in: path
+      description: The type of a data reference in a workspace
+      required: true
+      schema:
+        $ref: '#/components/schemas/ReferenceTypeEnum'
+
     ResourceId:
       name: resourceId
       in: path
@@ -748,14 +870,6 @@ components:
       schema:
         type: string
         format: uuid
-
-    ReferenceType:
-      name: referenceType
-      in: path
-      description: The type of a data reference in a workspace
-      required: true
-      schema:
-        $ref: '#/components/schemas/ReferenceTypeEnum'
 
     Name:
       name: name
@@ -784,12 +898,112 @@ components:
     CloudContext:
       name: cloudContext
       in: path
-      description: A cloud which holds context for a workspace.
+      description: A cloud platform which holds context for a workspace.
       required: true
       schema:
-        $ref: '#/components/schemas/CloudContext'
+        $ref: '#/components/schemas/CloudPlatform'
 
   schemas:
+    ### DEPRECATED SCHEMAS ###
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    CreateDataReferenceRequestBody:
+      type: object
+      required: [name, cloningInstructions]
+      properties:
+        name:
+          $ref: "#/components/schemas/Name"
+        description:
+          type: string
+          default: ""
+        resourceId:
+          description: The ID of the resource
+          type: string
+          format: uuid
+        referenceType:
+          $ref: '#/components/schemas/ReferenceTypeEnum'
+        reference:
+          $ref: '#/components/schemas/DataRepoSnapshot'
+        cloningInstructions:
+          $ref: '#/components/schemas/CloningInstructionsEnum'
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    DataReferenceRequestMetadata:
+      type: object
+      required: [name, cloningInstructions]
+      description: Common information shared across all types of data reference requests.
+      properties:
+        ## TODO: This is not implemented as a name. It used as if it is a snapshot identifier (UUID)
+        ##   So either this is a misnomer, or we are doing it wrong.
+        name:
+          $ref: "#/components/schemas/Name"
+        cloningInstructions:
+          $ref: '#/components/schemas/CloningInstructionsEnum'
+        description:
+          type: string
+          default: ""
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    DataReferenceDescription:
+      type: object
+      required: [referenceId, name, description, workspaceId, cloningInstructions]
+      properties:
+        referenceId:
+          description: The ID of the data reference
+          type: string
+          format: uuid
+        name:
+          description: The name of the data reference; used to refer to the reference
+          type: string
+        description:
+          type: string
+        workspaceId:
+          description: The ID of the workspace containing the reference
+          type: string
+          format: uuid
+        resourceDescription:
+          $ref: '#/components/schemas/ResourceDescription'
+        referenceType:
+          $ref: '#/components/schemas/ReferenceTypeEnum'
+        reference:
+          $ref: '#/components/schemas/DataRepoSnapshot'
+        credentialId:
+          description: The ID of the credential to use when accessing the resource
+          type: string
+        cloningInstructions:
+          $ref: '#/components/schemas/CloningInstructionsEnum'
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    ReferenceTypeEnum:
+      type: string
+      description: The type of a reference, if an uncontrolled resource
+      # TODO: swagger-codegen always looks for and removes a common prefix for
+      # enum values, which breaks enums that only have a single value.
+      # PLACEHOLDER_VALUE should be removed when we have an actual second value
+      # to use.
+      enum: ['DATA_REPO_SNAPSHOT', 'PLACEHOLDER_VALUE'] #eventually include GCS bucket, etc.
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    DataReferenceList:
+      type: object
+      required: [resources]
+      properties:
+        resources:
+          description: A list of controlled and/or uncontrolled data references
+          type: array
+          items:
+            $ref: '#/components/schemas/DataReferenceDescription'
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    UpdateDataReferenceRequestBody:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/Name"
+        description:
+          type: string
+
+    ### END OF DEPRECATED SCHEMAS ###
+
     ErrorReport:
       type: object
       required: [message, statusCode, causes]
@@ -900,6 +1114,12 @@ components:
           description: The ID of the workspace
           type: string
           format: uuid
+        displayName:
+          description: The human readable name of the workspace
+          type: string
+        description:
+          description: A description of the workspace
+          type: string
         spendProfile:
           description: ID of provided spend profile
           type: string
@@ -916,6 +1136,8 @@ components:
             unique requests. Sending different requests with the same jobId
             will lead to all but one of the request bodies being ignored.
             This will be randomly generated if not provided in a request.
+            Best practice is for job identifier to be a UUID, a ShortUUID,
+            or other globally unique identifier.
           type: string
         stage:
           $ref: '#/components/schemas/WorkspaceStageModel'
@@ -937,6 +1159,12 @@ components:
           description: The ID of the workspace
           type: string
           format: uuid
+        displayName:
+          description: The human readable name of the workspace
+          type: string
+        description:
+          description: A description of the workspace
+          type: string
         spendProfile:
           description: ID of provided spend profile
           type: string
@@ -947,6 +1175,16 @@ components:
           $ref: '#/components/schemas/GcpContext'
         # When we have an Azure context, we can put it right here.
         # No point making a complex structure when there will be only a few of these
+
+    UpdateWorkspaceRequestBody:
+      type: object
+      properties:
+        displayName:
+          description: The human readable name of the workspace
+          type: string
+        description:
+          description: A description of the workspace
+          type: string
 
     WorkspaceDescriptionList:
       type: object
@@ -963,29 +1201,20 @@ components:
       description: Instructions for copying this reference when cloning the workspace
       enum: ['COPY_NOTHING', 'COPY_DEFINITION', 'COPY_RESOURCE', 'COPY_REFERENCE']
 
-    ReferenceTypeEnum:
+    CloudPlatform:
       type: string
-      description: The type of a reference, if an uncontrolled resource
-      # TODO: swagger-codegen always looks for and removes a common prefix for
-      # enum values, which breaks enums that only have a single value.
-      # PLACEHOLDER_VALUE should be removed when we have an actual second value
-      # to use.
-      enum: ['DATA_REPO_SNAPSHOT', 'PLACEHOLDER_VALUE'] #eventually include GCS bucket, etc.
-
-    CloudContext:
-      type: string
-      description: Enum representing a cloud type.
-      enum: ['GOOGLE']
+      description: Enum representing a cloud platform type.
+      enum: ['GCP']
 
     CreateCloudContextRequest:
       type: object
-      required: [cloudType, jobControl]
+      required: [cloudPlatform, jobControl]
       description: |
         Request body for asynchronously creating a cloud context for a workspace.
-        Contains the requested CloudContext enum and JobControl object.
+        Contains the CloudPlatform for the context and the JobControl object.
       properties:
-        cloudType:
-          $ref: '#/components/schemas/CloudContext'
+        cloudPlatform:
+          $ref: '#/components/schemas/CloudPlatform'
         jobControl:
           $ref: '#/components/schemas/JobControl'
 
@@ -994,14 +1223,14 @@ components:
       description: The GCP cloud context associated with a workspace.
       properties:
         projectId:
-          description: The ID of Google Project associated with the workspace.
+          description: The ID of Gcp Project associated with the workspace.
           type: string
 
     CreateCloudContextResult:
       type: object
       description: |
         The result of a call to create a cloud context for a workspace. Contains
-        a JobReport detailing the async operation and either a GoogleContext
+        a JobReport detailing the async operation and either a GcpContext
         or an ErrorReport detailing an error.
       required: [jobReport]
       properties:
@@ -1011,42 +1240,6 @@ components:
           $ref: '#/components/schemas/GcpContext'
         errorReport:
           $ref: '#/components/schemas/ErrorReport'
-
-    # TODO(PF-404): remove this in favor of reference-type specific objects.
-    CreateDataReferenceRequestBody:
-      type: object
-      required: [name, cloningInstructions]
-      properties:
-        name:
-          $ref: "#/components/schemas/Name"
-        description:
-          type: string
-          default: ""
-        resourceId:
-          description: The ID of the resource
-          type: string
-          format: uuid
-        referenceType:
-          $ref: '#/components/schemas/ReferenceTypeEnum'
-        reference:
-          $ref: '#/components/schemas/DataRepoSnapshot'
-        cloningInstructions:
-          $ref: '#/components/schemas/CloningInstructionsEnum'
-
-    DataReferenceRequestMetadata:
-      type: object
-      required: [name, cloningInstructions]
-      description: Common information shared across all types of data reference requests.
-      properties:
-        ## TODO: This is not implemented as a name. It used as if it is a snapshot identifier (UUID)
-        ##   So either this is a misnomer, or we are doing it wrong.
-        name:
-          $ref: "#/components/schemas/Name"
-        cloningInstructions:
-          $ref: '#/components/schemas/CloningInstructionsEnum'
-        description:
-          type: string
-          default: ""
 
     CreateDataRepoSnapshotReferenceRequestBody:
       type: object
@@ -1058,7 +1251,7 @@ components:
         snapshot:
           $ref: '#/components/schemas/DataRepoSnapshot'
 
-    CreateGoogleBucketReferenceRequestBody:
+    CreateGcsBucketReferenceRequestBody:
       type: object
       description: A request to create a reference to a GCS bucket.
       required: [metadata, bucket]
@@ -1078,43 +1271,6 @@ components:
         dataset:
           $ref: 'common/cloud_resources_uid.yaml#/components/schemas/GoogleBigQueryDatasetUid'
 
-    UpdateDataReferenceRequestBody:
-      type: object
-      properties:
-        name:
-          $ref: "#/components/schemas/Name"
-        description:
-          type: string
-
-    # TODO(PF-404): remove this in favor of reference-type specific objects.
-    DataReferenceDescription:
-      type: object
-      required: [referenceId, name, description, workspaceId, cloningInstructions]
-      properties:
-        referenceId:
-          description: The ID of the data reference
-          type: string
-          format: uuid
-        name:
-          description: The name of the data reference; used to refer to the reference
-          type: string
-        description:
-          type: string
-        workspaceId:
-          description: The ID of the workspace containing the reference
-          type: string
-          format: uuid
-        resourceDescription:
-          $ref: '#/components/schemas/ResourceDescription'
-        referenceType:
-          $ref: '#/components/schemas/ReferenceTypeEnum'
-        reference:
-          $ref: '#/components/schemas/DataRepoSnapshot'
-        credentialId:
-          description: The ID of the credential to use when accessing the resource
-          type: string
-        cloningInstructions:
-          $ref: '#/components/schemas/CloningInstructionsEnum'
     ResourceDescription:
       description: Description of the workspace resource, if this is a controlled reference.
       type: object
@@ -1144,7 +1300,7 @@ components:
     DataReferenceMetadata:
       type: object
       required: [referenceId, name, workspaceId, cloningInstructions]
-      description: Information common across all types of data references.
+      description: Information common across all types of references.
       properties:
         referenceId:
           description: The ID of the data reference
@@ -1172,7 +1328,7 @@ components:
         snapshot:
           $ref: '#/components/schemas/DataRepoSnapshot'
 
-    GoogleBucketReference:
+    GcsBucketReference:
       type: object
       description: A reference to a GCS bucket.
       required: [metadata, bucket]
@@ -1191,17 +1347,6 @@ components:
           $ref: '#/components/schemas/DataReferenceMetadata'
         dataset:
           $ref: 'common/cloud_resources_uid.yaml#/components/schemas/GoogleBigQueryDatasetUid'
-
-    # TODO(PF-404): remove this in favor of reference-type specific objects.
-    DataReferenceList:
-      type: object
-      required: [resources]
-      properties:
-        resources:
-          description: A list of controlled and/or uncontrolled data references
-          type: array
-          items:
-            $ref: '#/components/schemas/DataReferenceDescription'
 
     DataRepoSnapshot:
       description: A reference to a snapshot in Data Repo.
@@ -1223,7 +1368,12 @@ components:
     IamRole:
       description: Enum containing all valid IAM roles on a Workspace
       type: string
-      enum: ['READER', 'WRITER', 'OWNER']
+      enum: ['READER', 'WRITER', 'APPLICATION', 'OWNER']
+
+    ControlledResourceIamRole:
+      description: Enum containing all IAM roles on controlled resources available to users
+      type: string
+      enum: [ 'READER', 'WRITER', 'EDITOR']
 
     RoleBinding:
       description: A binding between an IAM role and users with that role
@@ -1252,18 +1402,18 @@ components:
         memberEmail:
           type: string
 
-    CreateControlledGoogleBucketRequestBody:
+    CreateControlledGcsBucketRequestBody:
       description: Payload for requesting a new controlled resource.
       type: object
       properties:
         common:
           $ref: '#/components/schemas/ControlledResourceCommonFields'
-        googleBucket:
-          $ref: '#/components/schemas/GoogleBucketCreationParameters'
+        gcsBucket:
+          $ref: '#/components/schemas/GcsBucketCreationParameters'
 
     ControlledResourceCommonFields:
       type: object
-      required: [ name, cloningInstructions, jobControl, accessScope ]
+      required: [ name, cloningInstructions, jobControl, accessScope, managedBy ]
       properties:
         jobControl:
           $ref: '#/components/schemas/JobControl'
@@ -1283,16 +1433,24 @@ components:
           $ref: '#/components/schemas/PrivateResourceUser'
 
     PrivateResourceUser:
-      description: A user and role pair for a user of a private resource.
+      description: User and role information for a user of a private resource.
       type: object
       properties:
         userName:
           description: Email address for the user of the resource
           type: string
-        iamRole:
-          $ref: '#/components/schemas/IamRole'
+        privateResourceIamRoles:
+          $ref: '#/components/schemas/PrivateResourceIamRoles'
 
-    CreatedControlledGoogleBucket:
+    PrivateResourceIamRoles:
+      description: >-
+        List of role(s) granted to the user of a private resource. WRITER includes
+        READER by definition, so if both are present only WRITER will be granted.
+      type: array
+      items:
+        $ref: '#/components/schemas/ControlledResourceIamRole'
+
+    CreatedControlledGcsBucket:
       description: Response Payload for requesting a new controlled resource.
       type: object
       properties:
@@ -1302,15 +1460,15 @@ components:
           format: uuid
         jobReport:
           $ref: '#/components/schemas/JobReport'
-        googleBucket:
-          $ref: '#/components/schemas/GoogleBucketStoredAttributes'
+        gcpBucket:
+          $ref: '#/components/schemas/GcsBucketAttributes'
         errorReport:
           $ref: '#/components/schemas/ErrorReport'
 
-    GoogleBucketCreationParameters:
+    GcsBucketCreationParameters:
       description: >-
         Bucket-specific properties to be set on creation. These are a subset of the
-        values accepted by the Google Storage API.
+        values accepted by the Gcp Storage API.
       type: object
       properties:
         name:
@@ -1320,10 +1478,10 @@ components:
           description: A valid bucket location per https://cloud.google.com/storage/docs/locations.
           type: string
         defaultStorageClass:
-          $ref: '#/components/schemas/GoogleBucketDefaultStorageClass'
+          $ref: '#/components/schemas/GcsBucketDefaultStorageClass'
         lifecycle:
-          $ref: '#/components/schemas/GoogleBucketLifecycle'
-    GoogleBucketStoredAttributes:
+          $ref: '#/components/schemas/GcsBucketLifecycle'
+    GcsBucketAttributes:
       description: >-
         Bucket properties included in post-creation, get, and update. Others must be
         retrieved from GCS using the name.
@@ -1332,18 +1490,17 @@ components:
         bucketName:
           description: Name of created bucket (not the resource nmae).
           type: string
-    GoogleBucketDefaultStorageClass:
+    GcsBucketDefaultStorageClass:
       description: >-
         Type and availability of objects in a bucket, described at https://cloud.google.com/storage/docs/storage-classes.
-        This list does not include legacy types that apply to some existing buckets. For those, see
-        GoogleBucketLegacyStorageClass.
+        This list does not include legacy types that apply to some existing buckets.
       type: string
       enum:
         - STANDARD
         - NEARLINE
         - COLDLINE
         - ARCHIVE
-    GoogleBucketLifecycle:
+    GcsBucketLifecycle:
       description: >-
         Options to control automatic deletion or storage class change for a bucket.
         Described at https://cloud.google.com/storage/docs/lifecycle.
@@ -1353,35 +1510,35 @@ components:
           description: List of rules for this bucket
           type: array
           items:
-            $ref: '#/components/schemas/GoogleBucketLifecycleRule'
+            $ref: '#/components/schemas/GcsBucketLifecycleRule'
 
-    GoogleBucketLifecycleRule:
+    GcsBucketLifecycleRule:
       description: A lifecycle rule for a bucket.
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/GoogleBucketLifecycleRuleAction'
+          $ref: '#/components/schemas/GcsBucketLifecycleRuleAction'
         condition:
-          $ref: '#/components/schemas/GoogleBucketLifecycleRuleCondition'
+          $ref: '#/components/schemas/GcsBucketLifecycleRuleCondition'
 
-    GoogleBucketLifecycleRuleAction:
+    GcsBucketLifecycleRuleAction:
       description: The lifecycle action to take. See https://cloud.google.com/storage/docs/lifecycle#actions.
       type: object
       properties:
         storageClass:
-          $ref: '#/components/schemas/GoogleBucketDefaultStorageClass'
+          $ref: '#/components/schemas/GcsBucketDefaultStorageClass'
         type:
-          $ref: '#/components/schemas/GoogleBucketLifecycleRuleActionType'
+          $ref: '#/components/schemas/GcsBucketLifecycleRuleActionType'
 
-    GoogleBucketLifecycleRuleActionType:
+    GcsBucketLifecycleRuleActionType:
       description: >-
-        Type of action to perform. Formatted like our Java enums, but spelled in Camel case in Google API.
+        Type of action to perform. Formatted like our Java enums, but spelled in Camel case in Gcp API.
       type: string
       enum:
         - DELETE
         - SET_STORAGE_CLASS
 
-    GoogleBucketLifecycleRuleCondition:
+    GcsBucketLifecycleRuleCondition:
       description: The condition(s) under which the action will be taken.
       type: object
       properties:
@@ -1421,7 +1578,7 @@ components:
             "REGIONAL", and "DURABLE_REDUCED_AVAILABILITY".
           type: array
           items:
-            $ref: '#/components/schemas/GoogleBucketDefaultStorageClass'
+            $ref: '#/components/schemas/GcsBucketDefaultStorageClass'
         noncurrentTimeBefore:
           description: >-
             Relevant only for versioned objects. This condition is satisfied for objects that became
@@ -1434,20 +1591,47 @@ components:
             when there are at least N versions (including the live version) newer than this version
             of the object.
           type: integer
-  responses:
-    CreatedWorkspaceResponse:
-      description: Response to createWorkspace calls
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CreatedWorkspace'
 
+    DeleteControlledGcsBucketRequest:
+      type: object
+      required: [ jobControl ]
+      properties:
+        jobControl:
+          $ref: '#/components/schemas/JobControl'
+
+    DeleteControlledGcsBucketResult:
+      type: object
+      properties:
+        jobReport:
+          $ref: '#/components/schemas/JobReport'
+        errorReport:
+          $ref: '#/components/schemas/ErrorReport'
+
+  responses:
+    ### DEPRECATED RESPONSES ###
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
     DataReferenceResponse:
       description: Response to getDataReference calls
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/DataReferenceDescription'
+
+    # TODO(PF-404): remove this in favor of reference-type specific objects.
+    ReferenceListResponse:
+      description: Response to list resource calls
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataReferenceList'
+    ### END OF DEPRECATED RESPONSES ###
+
+    CreatedWorkspaceResponse:
+      description: Response to createWorkspace calls
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedWorkspace'
 
     DataRepoSnapshotReferenceResponse:
       description: Response containing a reference to a Data Repo snapshot.
@@ -1456,12 +1640,12 @@ components:
           schema:
             $ref: '#/components/schemas/DataRepoSnapshotReference'
 
-    GoogleBucketReferenceResponse:
-      description: Response containing a reference to a Google bucket.
+    GcsBucketReferenceResponse:
+      description: Response containing a reference to a Gcp bucket.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/GoogleBucketReference'
+            $ref: '#/components/schemas/GcsBucketReference'
 
     BigQueryDatasetReferenceResponse:
       description: Response containing a reference to a BiqQuery dataset.
@@ -1470,13 +1654,6 @@ components:
           schema:
             $ref: '#/components/schemas/BigQueryDatasetReference'
 
-    ReferenceListResponse:
-      description: Response to list resource calls
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/DataReferenceList'
-
     RoleBindingListResponse:
       description: Response to list permissions calls
       content:
@@ -1484,19 +1661,26 @@ components:
           schema:
             $ref: '#/components/schemas/RoleBindingList'
 
-    CreatedControlledGoogleBucketResponse:
+    CreatedControlledGcsBucketResponse:
       description: Response to Create controlled resource
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreatedControlledGoogleBucket'
+            $ref: '#/components/schemas/CreatedControlledGcsBucket'
 
-    GetControlledGoogleBucketResponse:
+    DeleteControlledGcsBucketResponse:
+      description: Response Payload for deleting a Gcs bucket
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeleteControlledGcsBucketResult'
+
+    GetControlledGcsBucketResponse:
       description: Response to get bucket
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/GoogleBucketStoredAttributes'
+            $ref: '#/components/schemas/GcsBucketAttributes'
 
     CreateCloudContextResultResponse:
       description: Job is complete (succeeded or failed)

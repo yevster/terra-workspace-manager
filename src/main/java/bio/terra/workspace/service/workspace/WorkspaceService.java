@@ -13,19 +13,23 @@ import bio.terra.workspace.service.spendprofile.SpendProfileId;
 import bio.terra.workspace.service.spendprofile.SpendProfileService;
 import bio.terra.workspace.service.stage.StageService;
 import bio.terra.workspace.service.workspace.exceptions.BufferServiceDisabledException;
+import bio.terra.workspace.service.workspace.exceptions.CloudContextRequiredException;
 import bio.terra.workspace.service.workspace.exceptions.MissingSpendProfileException;
 import bio.terra.workspace.service.workspace.exceptions.NoBillingAccountException;
-import bio.terra.workspace.service.workspace.flight.CreateGoogleContextFlight;
-import bio.terra.workspace.service.workspace.flight.DeleteGoogleContextFlight;
+import bio.terra.workspace.service.workspace.flight.CreateGcpContextFlight;
+import bio.terra.workspace.service.workspace.flight.DeleteGcpContextFlight;
 import bio.terra.workspace.service.workspace.flight.WorkspaceCreateFlight;
 import bio.terra.workspace.service.workspace.flight.WorkspaceDeleteFlight;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
+import bio.terra.workspace.service.workspace.model.GcpCloudContext;
 import bio.terra.workspace.service.workspace.model.Workspace;
 import bio.terra.workspace.service.workspace.model.WorkspaceRequest;
 import io.opencensus.contrib.spring.aop.Traced;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,6 +38,7 @@ import org.springframework.stereotype.Component;
  * <p>This service holds core workspace management operations like creating, reading, and deleting
  * workspaces as well as their cloud contexts. New methods generally should go in new services.
  */
+@Lazy
 @Component
 public class WorkspaceService {
 
@@ -78,6 +83,10 @@ public class WorkspaceService {
     createJob.addParameter(
         WorkspaceFlightMapKeys.WORKSPACE_STAGE, workspaceRequest.workspaceStage());
 
+    createJob.addParameter(
+        WorkspaceFlightMapKeys.DISPLAY_NAME_ID, workspaceRequest.displayName().orElse(""));
+    createJob.addParameter(
+        WorkspaceFlightMapKeys.DESCRIPTION_ID, workspaceRequest.description().orElse(""));
     return createJob.submitAndWait(UUID.class);
   }
 
@@ -126,10 +135,29 @@ public class WorkspaceService {
     return validateWorkspaceAndAction(userReq, id, SamConstants.SAM_WORKSPACE_READ_ACTION);
   }
 
+  /**
+   * Update an existing workspace. Currently, can change the workspace's display name or
+   * description.
+   *
+   * @param workspaceId workspace of interest
+   * @param name name to change - may be null
+   * @param description description to change - may be null
+   */
+  public Workspace updateWorkspace(
+      AuthenticatedUserRequest userReq,
+      UUID workspaceId,
+      @Nullable String name,
+      @Nullable String description) {
+    validateWorkspaceAndAction(userReq, workspaceId, SamConstants.SAM_WORKSPACE_WRITE_ACTION);
+    workspaceDao.updateWorkspace(workspaceId, name, description);
+    return workspaceDao.getWorkspace(workspaceId);
+  }
+
   /** Delete an existing workspace by ID. */
   @Traced
   public void deleteWorkspace(UUID id, AuthenticatedUserRequest userReq) {
-    validateWorkspaceAndAction(userReq, id, SamConstants.SAM_WORKSPACE_DELETE_ACTION);
+    Workspace workspace =
+        validateWorkspaceAndAction(userReq, id, SamConstants.SAM_WORKSPACE_DELETE_ACTION);
 
     String description = "Delete workspace " + id;
     JobBuilder deleteJob =
@@ -140,7 +168,8 @@ public class WorkspaceService {
                 WorkspaceDeleteFlight.class,
                 null, // Delete does not have a useful request body
                 userReq)
-            .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, id);
+            .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, id)
+            .addParameter(WorkspaceFlightMapKeys.WORKSPACE_STAGE, workspace.getWorkspaceStage());
     deleteJob.submitAndWait(null);
   }
 
@@ -181,7 +210,7 @@ public class WorkspaceService {
         .newJob(
             "Create GCP Cloud Context " + workspaceId,
             jobId,
-            CreateGoogleContextFlight.class,
+            CreateGcpContextFlight.class,
             /* request= */ null,
             userReq)
         .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, workspaceId)
@@ -204,10 +233,27 @@ public class WorkspaceService {
         .newJob(
             "Delete GCP Context " + workspaceId,
             UUID.randomUUID().toString(),
-            DeleteGoogleContextFlight.class,
+            DeleteGcpContextFlight.class,
             /* request= */ null,
             userReq)
         .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, workspaceId)
         .submitAndWait(null);
+  }
+
+  /**
+   * Helper method used by other classes that require the GCP project to exist in the workspace. It
+   * throws if the project (GCP cloud context) is not set up.
+   *
+   * @param workspaceId unique workspace id
+   * @return GCP project id
+   */
+  public String getRequiredGcpProject(UUID workspaceId) {
+    Workspace workspace = workspaceDao.getWorkspace(workspaceId);
+    GcpCloudContext gcpCloudContext =
+        workspace
+            .getGcpCloudContext()
+            .orElseThrow(
+                () -> new CloudContextRequiredException("Operation requires GCP cloud context"));
+    return gcpCloudContext.getGcpProjectId();
   }
 }

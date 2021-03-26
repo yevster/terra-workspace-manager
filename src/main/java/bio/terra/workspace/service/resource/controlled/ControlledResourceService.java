@@ -1,16 +1,21 @@
 package bio.terra.workspace.service.resource.controlled;
 
 import bio.terra.workspace.db.ResourceDao;
-import bio.terra.workspace.generated.model.IamRole;
-import bio.terra.workspace.generated.model.JobControl;
+import bio.terra.workspace.generated.model.ApiGcsBucketCreationParameters;
+import bio.terra.workspace.generated.model.ApiJobControl;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
+import bio.terra.workspace.service.iam.model.ControlledResourceIamRoleList;
 import bio.terra.workspace.service.iam.model.SamConstants;
+import bio.terra.workspace.service.iam.model.SamConstants.SamControlledResourceCreateActions;
 import bio.terra.workspace.service.job.JobBuilder;
+import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.job.JobService;
 import bio.terra.workspace.service.resource.WsmResource;
 import bio.terra.workspace.service.resource.controlled.flight.create.CreateControlledResourceFlight;
+import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteControlledResourceGcsBucketFlight;
 import bio.terra.workspace.service.stage.StageService;
 import bio.terra.workspace.service.workspace.WorkspaceService;
+import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +44,16 @@ public class ControlledResourceService {
 
   public String createControlledResource(
       ControlledResource resource,
-      Object creationParameters,
-      IamRole creationIamRole,
-      JobControl jobControl,
+      ApiGcsBucketCreationParameters creationParameters,
+      ControlledResourceIamRoleList privateResourceIamRoles,
+      ApiJobControl jobControl,
+      String resultPath,
       AuthenticatedUserRequest userRequest) {
     stageService.assertMcWorkspace(resource.getWorkspaceId(), "createControlledResource");
     workspaceService.validateWorkspaceAndAction(
-        userRequest, resource.getWorkspaceId(), SamConstants.SAM_WORKSPACE_WRITE_ACTION);
+        userRequest,
+        resource.getWorkspaceId(),
+        SamControlledResourceCreateActions.get(resource.getAccessScope(), resource.getManagedBy()));
     final String jobDescription =
         String.format(
             "Create controlled resource %s; id %s; name %s",
@@ -60,8 +68,9 @@ public class ControlledResourceService {
                 resource,
                 userRequest)
             .addParameter(ControlledResourceKeys.CREATION_PARAMETERS, creationParameters)
-            .addParameter(ControlledResourceKeys.IAM_ROLE, creationIamRole);
-
+            .addParameter(
+                ControlledResourceKeys.PRIVATE_RESOURCE_IAM_ROLES, privateResourceIamRoles)
+            .addParameter(JobMapKeys.RESULT_PATH.getKeyName(), resultPath);
     return jobBuilder.submit();
   }
 
@@ -71,6 +80,33 @@ public class ControlledResourceService {
     workspaceService.validateWorkspaceAndAction(
         userReq, workspaceId, SamConstants.SAM_WORKSPACE_READ_ACTION);
     WsmResource wsmResource = resourceDao.getResource(workspaceId, resourceId);
-    return wsmResource.castControlledResource();
+    return wsmResource.castToControlledResource();
+  }
+
+  public String deleteControlledGcsBucket(
+      ApiJobControl jobControl,
+      UUID workspaceId,
+      UUID resourceId,
+      String resultPath,
+      AuthenticatedUserRequest userRequest) {
+    stageService.assertMcWorkspace(workspaceId, "deleteControlledGcsBucket");
+    workspaceService.validateWorkspaceAndAction(
+        userRequest, workspaceId, SamConstants.SAM_WORKSPACE_WRITE_ACTION);
+    final String jobDescription =
+        "Delete controlled GCS bucket resource; id: " + resourceId.toString();
+
+    final JobBuilder jobBuilder =
+        jobService
+            .newJob(
+                jobDescription,
+                jobControl.getId(),
+                DeleteControlledResourceGcsBucketFlight.class,
+                null,
+                userRequest)
+            .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, workspaceId)
+            .addParameter(WorkspaceFlightMapKeys.ResourceKeys.RESOURCE_ID, resourceId)
+            .addParameter(JobMapKeys.RESULT_PATH.getKeyName(), resultPath);
+
+    return jobBuilder.submit();
   }
 }
