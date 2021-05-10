@@ -2,7 +2,6 @@
 // These are applied in the buildscript block.
 def useMavenLocal = true
 repositories {
-
     if (useMavenLocal) {
         mavenLocal()
     }
