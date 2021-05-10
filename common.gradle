@@ -1,7 +1,8 @@
 // Common definitions and constraints to be applied to the projects.
 // These are applied in the buildscript block.
-def useMavenLocal = false
+def useMavenLocal = true
 repositories {
+
     if (useMavenLocal) {
         mavenLocal()
     }

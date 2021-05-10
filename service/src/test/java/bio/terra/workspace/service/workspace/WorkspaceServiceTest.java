@@ -42,6 +42,7 @@ import bio.terra.workspace.service.workspace.exceptions.StageDisabledException;
 import bio.terra.workspace.service.workspace.flight.DeleteProjectStep;
 import bio.terra.workspace.service.workspace.flight.DeleteWorkspaceAuthzStep;
 import bio.terra.workspace.service.workspace.flight.DeleteWorkspaceStateStep;
+import bio.terra.workspace.service.workspace.flight.SetProjectBillingStep;
 import bio.terra.workspace.service.workspace.model.GcpCloudContext;
 import bio.terra.workspace.service.workspace.model.Workspace;
 import bio.terra.workspace.service.workspace.model.WorkspaceRequest;
@@ -430,6 +431,7 @@ class WorkspaceServiceTest extends BaseConnectedTest {
     String jobId = UUID.randomUUID().toString();
     workspaceService.createGcpCloudContext(
         request.workspaceId(), jobId, "/fake/value", USER_REQUEST);
+    Thread.sleep(5000);
     jobService.waitForJob(jobId);
     assertNull(jobService.retrieveJobResult(jobId, Object.class, USER_REQUEST).getException());
     Workspace workspace = workspaceService.getWorkspace(request.workspaceId(), USER_REQUEST);
@@ -445,6 +447,14 @@ class WorkspaceServiceTest extends BaseConnectedTest {
     // Check that project is now being deleted.
     Project project = crl.getCloudResourceManagerCow().projects().get(projectId).execute();
     assertEquals("DELETE_REQUESTED", project.getLifecycleState());
+  }
+
+  @Test
+  @DisabledIfEnvironmentVariable(named = "TEST_ENV", matches = BUFFER_SERVICE_DISABLED_ENVS_REG_EX)
+  void testBillingProjectId() throws Exception {
+    SetProjectBillingStep setProjectBillingStep =
+        new SetProjectBillingStep(crl.getCloudBillingClientCow());
+    setProjectBillingStep.doStep(null);
   }
 
   @Test
