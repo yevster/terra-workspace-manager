@@ -8,7 +8,7 @@
 # Use it to prepare a workflow. When it is ready, you can copy the file to the
 # proper name and merge from there.
 
-name: Workflow Tester Invoke CF
+name: Workflow Tester Invoke Cloud Function
 on:
   workflow_dispatch: {}
 
