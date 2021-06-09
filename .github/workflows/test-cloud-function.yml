@@ -52,7 +52,7 @@ jobs:
           vault-token: ${{ steps.vault-token-step.outputs.vault-token }}
           target: wsmtest
 
-      - name: Run the perf test suite with CF
+      - name: Run the perf test suite and stream results to BQ
         id: perf-test
         if: always()
         uses: ./.github/actions/integration-test
