@@ -64,15 +64,9 @@ public class DeleteInitialPods extends DisruptiveScript {
         KubernetesClientUtils.printApiPods(workspacemanagerDeployment);
         KubernetesClientUtils.deletePod(podName);
         Calendar startWaiting = Calendar.getInstance();
-        try {
-          logger.debug("start waiting for pod to recover at time {}", LocalDateTime.ofInstant(startWaiting.toInstant(), startWaiting.getTimeZone().toZoneId()));
-          TimeUnit.SECONDS.sleep(TIME_TO_WAIT);
-          KubernetesClientUtils.waitForReplicaSetSizeChange(
-                  workspacemanagerDeployment, podsToDelete.size());
-        } catch (Exception e) {
-          logger.debug("KubernetesClientUtils.waitForReplicaSetSizeChange: " + e.getMessage());
-          e.printStackTrace();
-        }
+        logger.debug("start waiting for pod to recover at time {}", LocalDateTime.ofInstant(startWaiting.toInstant(), startWaiting.getTimeZone().toZoneId()));
+        TimeUnit.SECONDS.sleep(TIME_TO_WAIT);
+        KubernetesClientUtils.waitForReplicaSetSizeChange(workspacemanagerDeployment, podsToDelete.size());
         Calendar endWaiting = Calendar.getInstance();
         logger.debug("end waiting for pod to recover at time {}", LocalDateTime.ofInstant(endWaiting.toInstant(), endWaiting.getTimeZone().toZoneId()));
         logger.debug("pod recovers in {} ms", endWaiting.getTimeInMillis()-startWaiting.getTimeInMillis());
