@@ -3,6 +3,8 @@ package bio.terra.workspace.service.resource.controlled.flight.clone.bucket;
 import bio.terra.stairway.Flight;
 import bio.terra.stairway.FlightMap;
 import bio.terra.workspace.common.utils.FlightBeanBag;
+import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetUpdateParameters;
+import bio.terra.workspace.generated.model.ApiGcpGcsBucketCreationParameters;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
@@ -10,8 +12,43 @@ import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
+import bio.terra.workspace.service.workspace.flight.FlightMapKey;
 
 public class CloneControlledGcsBucketResourceFlight extends Flight {
+
+  /**
+   * Scoped enum for this flight's map keys.
+   */
+  public enum CloneBucketKey implements FlightMapKey {
+    REQUEST(ControlledResource.class),
+    AUTH_USER_INFO(AuthenticatedUserRequest.class),
+    PREVIOUS_RESOURCE_NAME(String.class),
+    PREVIOUS_RESOURCE_DESCRIPTION(String.class),
+    PREVIOUS_UPDATE_PARAMETERS(ApiGcpBigQueryDatasetUpdateParameters.class),
+    CREATION_PARAMETERS(ApiGcpGcsBucketCreationParameters.class);
+    // etc
+
+    private final Class<?> klass;
+    CloneBucketKey(Class<?> klass) {
+      this.klass = klass;
+    }
+
+    /**
+     * this implementation will give names like "CloneControlledGcsBucketResourceFlight.REQUEST".
+     * One drawback is that renaming the flight or the key will break stored flight rows, so maybe
+     * this is too slick.
+     * @return
+     */
+    @Override
+    public String getKeyName() {
+      return CloneControlledGcsBucketResourceFlight.class.getName() + "." + name();
+    }
+
+    @Override
+    public Class<?> getValueClass() {
+      return klass;
+    }
+  }
 
   public CloneControlledGcsBucketResourceFlight(
       FlightMap inputParameters, Object applicationContext) {

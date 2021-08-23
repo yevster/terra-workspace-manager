@@ -1,5 +1,8 @@
 package bio.terra.workspace.service.resource.controlled.flight.clone.bucket;
 
+import static bio.terra.workspace.service.workspace.flight.FlightMapEntryIOType.*;
+import static bio.terra.workspace.service.workspace.flight.FlightMapType.*;
+
 import bio.terra.stairway.FlightContext;
 import bio.terra.stairway.FlightMap;
 import bio.terra.stairway.Step;
@@ -14,7 +17,12 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
 import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
+import bio.terra.workspace.service.resource.controlled.flight.clone.bucket.CloneControlledGcsBucketResourceFlight.CloneBucketKey;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
+import bio.terra.workspace.service.workspace.flight.FlightMapEntryIOType;
+import bio.terra.workspace.service.workspace.flight.FlightMapKey;
+import bio.terra.workspace.service.workspace.flight.FlightMapType;
+import bio.terra.workspace.service.workspace.flight.StepContract;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +30,44 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 
 public class CopyGcsBucketDefinitionStep implements Step {
+
+  private enum Contract implements StepContract {
+    REQUEST(CloneBucketKey.REQUEST, INPUT_PARAMETERS, true, INPUT),
+    AUTH_USER_INFO(CloneBucketKey.AUTH_USER_INFO, INPUT_PARAMETERS, false, INPUT);
+    private final FlightMapKey flightMapKey;
+    private final FlightMapType fligthMapType;
+    private final boolean isRequired;
+    private final FlightMapEntryIOType ioType;
+
+    Contract(FlightMapKey flightMapKey,
+        FlightMapType fligthMapType, boolean isRequired,
+        FlightMapEntryIOType ioType) {
+      this.flightMapKey = flightMapKey;
+      this.fligthMapType = fligthMapType;
+      this.isRequired = isRequired;
+      this.ioType = ioType;
+    }
+
+    @Override
+    public FlightMapKey getKey() {
+      return flightMapKey;
+    }
+
+    @Override
+    public FlightMapType getFlightMapType() {
+      return fligthMapType;
+    }
+
+    @Override
+    public boolean getIsRequired() {
+      return isRequired;
+    }
+
+    @Override
+    public FlightMapEntryIOType getIOType() {
+      return ioType;
+    }
+  }
 
   private final AuthenticatedUserRequest userRequest;
   private final ControlledGcsBucketResource sourceBucket;
