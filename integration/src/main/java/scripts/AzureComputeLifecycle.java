@@ -28,7 +28,6 @@ public class AzureComputeLifecycle extends WorkspaceApiTestScriptBase {
 
     @Override
     protected void doUserJourney(TestUserSpecification testUser, WorkspaceApi workspaceApi) throws Exception {
-        UUID workspaceId = UUID.randomUUID();
         String deploymentName = "test" + UUID.randomUUID();
         String template;
 
@@ -47,12 +46,12 @@ public class AzureComputeLifecycle extends WorkspaceApiTestScriptBase {
         ClientTestUtils.assertHttpSuccess(workspaceApi, "CREATE deployment");
 
         //The template usually deploys in seconds, providing ample buffer
-        Thread.sleep(60000);
-
-        GetDeployment deployment = workspaceApi.getDeployment(deploymentName);
-        ClientTestUtils.assertHttpSuccess(workspaceApi, "GET deployment");
-
-        assertThat(deployment.getName(), equalTo(deploymentName));
-        assertThat(deployment.getProvisioningState(), equalTo("Succeeded"));
+//        Thread.sleep(60000);
+//
+//        GetDeployment deployment = workspaceApi.getDeployment(deploymentName);
+//        ClientTestUtils.assertHttpSuccess(workspaceApi, "GET deployment");
+//
+//        assertThat(deployment.getName(), equalTo(deploymentName));
+//        assertThat(deployment.getProvisioningState(), equalTo("Succeeded"));
     }
 }
