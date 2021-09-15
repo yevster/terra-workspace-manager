@@ -5,6 +5,7 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.sam.SamRetry;
 import bio.terra.common.sam.exception.SamExceptionFactory;
 import bio.terra.workspace.app.configuration.external.SamConfiguration;
+import bio.terra.workspace.service.MockSamService;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
 import bio.terra.workspace.service.iam.model.RoleBinding;
 import bio.terra.workspace.service.iam.model.SamConstants;
@@ -58,14 +59,19 @@ public class SamService {
 
   private final SamConfiguration samConfig;
   private final StageService stageService;
+  private final MockSamService mockSamService;
 
   private final Set<String> SAM_OAUTH_SCOPES = ImmutableSet.of("openid", "email", "profile");
   private boolean wsmServiceAccountInitialized;
 
   @Autowired
-  public SamService(SamConfiguration samConfig, StageService stageService) {
+  public SamService(
+      SamConfiguration samConfig,
+      StageService stageService,
+      MockSamService mockSamService) {
     this.samConfig = samConfig;
     this.stageService = stageService;
+    this.mockSamService = mockSamService;
     this.wsmServiceAccountInitialized = false;
   }
 
@@ -181,6 +187,11 @@ public class SamService {
   @Traced
   public void createWorkspaceWithDefaults(AuthenticatedUserRequest userRequest, UUID id)
       throws InterruptedException {
+    if (mockSamService.useMock(userRequest)) {
+      mockSamService.createWorkspaceWithDefaults(userRequest, id);
+      return;
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     // Sam will throw an error if no owner is specified, so the caller's email is required. It can
     // be looked up using the auth token if that's all the caller provides.
@@ -209,6 +220,10 @@ public class SamService {
   @Traced
   public List<UUID> listWorkspaceIds(AuthenticatedUserRequest userRequest)
       throws InterruptedException {
+    if (mockSamService.useMock(userRequest)) {
+      return mockSamService.listWorkspaceIds(userRequest);
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     List<UUID> workspaceIds = new ArrayList<>();
     try {
@@ -234,6 +249,11 @@ public class SamService {
   @Traced
   public void deleteWorkspace(AuthenticatedUserRequest userRequest, UUID id)
       throws InterruptedException {
+    if (mockSamService.useMock(userRequest)) {
+      mockSamService.deleteWorkspace(userRequest, id);
+      return;
+    }
+
     String authToken = userRequest.getRequiredToken();
     ResourcesApi resourceApi = samResourcesApi(authToken);
     try {
@@ -261,6 +281,10 @@ public class SamService {
       String resourceId,
       String action)
       throws InterruptedException {
+    if (mockSamService.useMock(userRequest)) {
+      return mockSamService.isAuthorized(userRequest, iamResourceType, resourceId, action);
+    }
+
     String accessToken = userRequest.getRequiredToken();
     ResourcesApi resourceApi = samResourcesApi(accessToken);
     try {
@@ -712,6 +736,11 @@ public class SamService {
   public void deleteControlledResource(
       ControlledResource resource, AuthenticatedUserRequest userRequest)
       throws InterruptedException {
+    if (mockSamService.useMock(userRequest)) {
+      mockSamService.deleteControlledResource(resource, userRequest);
+      return;
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     try {
       SamRetry.retry(
