@@ -9,6 +9,7 @@ import bio.terra.workspace.service.iam.SamService;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceMetadataManager;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
 import bio.terra.workspace.service.resource.controlled.flight.clone.bucket.BucketCloneRolesComponent;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
 import bio.terra.workspace.service.resource.referenced.ReferencedResourceService;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class FlightBeanBag {
   private final BufferService bufferService;
   private final ControlledResourceMetadataManager controlledResourceMetadataManager;
   private final ControlledResourceService controlledResourceService;
+  private final ControlledGcpResourceService controlledGcpResourceService;
   private final CrlService crlService;
   private final DataRepoService dataRepoService;
   private final ReferencedResourceService referencedResourceService;
@@ -44,6 +46,7 @@ public class FlightBeanBag {
       BufferService bufferService,
       ControlledResourceMetadataManager controlledResourceMetadataManager,
       ControlledResourceService controlledResourceService,
+      ControlledGcpResourceService controlledGcpResourceService,
       CrlService crlService,
       DataRepoService dataRepoService,
       ReferencedResourceService referencedResourceService,
@@ -55,6 +58,7 @@ public class FlightBeanBag {
     this.bufferService = bufferService;
     this.controlledResourceMetadataManager = controlledResourceMetadataManager;
     this.controlledResourceService = controlledResourceService;
+    this.controlledGcpResourceService = controlledGcpResourceService;
     this.crlService = crlService;
     this.dataRepoService = dataRepoService;
     this.referencedResourceService = referencedResourceService;
@@ -82,6 +86,10 @@ public class FlightBeanBag {
 
   public ControlledResourceService getControlledResourceService() {
     return controlledResourceService;
+  }
+
+  public ControlledGcpResourceService getControlledGcpResourceService() {
+    return controlledGcpResourceService;
   }
 
   public CrlService getCrlService() {

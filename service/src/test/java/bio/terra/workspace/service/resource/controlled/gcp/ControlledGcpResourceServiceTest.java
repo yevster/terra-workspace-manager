@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.CREATE_NOTEBOOK_SERVICE_ACCOUNT_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,6 +29,7 @@ import bio.terra.workspace.service.crl.CrlService;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
 import bio.terra.workspace.service.job.JobService;
 import bio.terra.workspace.service.job.exception.InvalidResultStateException;
+import bio.terra.workspace.service.resource.controlled.*;
 import bio.terra.workspace.service.resource.controlled.flight.create.CreateBigQueryDatasetStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.CreateAiNotebookInstanceStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.CreateServiceAccountStep;
@@ -68,7 +69,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-public class ControlledResourceServiceTest extends BaseConnectedTest {
+public class ControlledGcpResourceServiceTest extends BaseConnectedTest {
   /** The default roles to use when creating user private AI notebook instance resources */
   private static final List<ControlledResourceIamRole> DEFAULT_ROLES =
       // Need to be careful about what subclass of List gets put in a FlightMap.
@@ -81,6 +82,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
   private static final String DEFAULT_NOTEBOOK_LOCATION = "us-east1-b";
 
   @Autowired private ControlledResourceService controlledResourceService;
+  @Autowired private ControlledGcpResourceService controlledGcpResourceService;
   @Autowired private ControlledResourceMetadataManager controlledResourceMetadataManager;
   @Autowired private CrlService crlService;
   @Autowired private JobService jobService;
@@ -100,8 +102,8 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
    * @param user
    */
   private Workspace reusableWorkspace(UserAccessUtils.TestUser user) {
-    if (ControlledResourceServiceTest.reusableWorkspace == null) {
-      ControlledResourceServiceTest.reusableWorkspace =
+    if (ControlledGcpResourceServiceTest.reusableWorkspace == null) {
+      ControlledGcpResourceServiceTest.reusableWorkspace =
           workspaceUtils.createWorkspaceWithGcpContext(user.getAuthenticatedRequest());
     }
     return reusableWorkspace;
@@ -147,7 +149,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
         FlightDebugInfo.newBuilder().doStepFailures(retrySteps).build());
 
     String jobId =
-        controlledResourceService.createAiNotebookInstance(
+        controlledGcpResourceService.createAiNotebookInstance(
             resource,
             creationParameters,
             DEFAULT_ROLES,
@@ -218,7 +220,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .name("new-name-same-notebook-instance")
             .build();
     String duplicateResourceJobId =
-        controlledResourceService.createAiNotebookInstance(
+        controlledGcpResourceService.createAiNotebookInstance(
             duplicateResource,
             creationParameters,
             DEFAULT_ROLES,
@@ -269,7 +271,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .build());
 
     String jobId =
-        controlledResourceService.createAiNotebookInstance(
+        controlledGcpResourceService.createAiNotebookInstance(
             resource,
             creationParameters,
             DEFAULT_ROLES,
@@ -336,7 +338,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
         assertThrows(
             BadRequestException.class,
             () ->
-                controlledResourceService.createAiNotebookInstance(
+                controlledGcpResourceService.createAiNotebookInstance(
                     resource,
                     creationParameters,
                     noWriterRoles,
@@ -426,7 +428,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .build();
 
     String createJobId =
-        controlledResourceService.createAiNotebookInstance(
+        controlledGcpResourceService.createAiNotebookInstance(
             resource,
             creationParameters,
             DEFAULT_ROLES,
@@ -480,7 +482,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .datasetName(datasetId)
             .build();
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -501,7 +503,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
         new ApiGcpBigQueryDatasetUpdateParameters()
             .defaultTableLifetime(newDefaultTableLifetime)
             .defaultPartitionLifetime(newDefaultPartitionLifetime);
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         fetchedDataset, updateParameters, user.getAuthenticatedRequest(), newName, newDescription);
 
     ControlledBigQueryDatasetResource updatedResource =
@@ -566,7 +568,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     jobService.setFlightDebugInfoForTest(
         FlightDebugInfo.newBuilder().doStepFailures(retrySteps).build());
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -624,7 +626,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     assertThrows(
         InvalidResultStateException.class,
         () ->
-            controlledResourceService.createBigQueryDataset(
+            controlledGcpResourceService.createBigQueryDataset(
                 resource,
                 creationParameters,
                 Collections.emptyList(),
@@ -667,7 +669,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .build();
 
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -720,7 +722,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .build();
 
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -773,7 +775,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .datasetName(datasetId)
             .build();
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -795,7 +797,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
         new ApiGcpBigQueryDatasetUpdateParameters()
             .defaultTableLifetime(newDefaultTableLifetime)
             .defaultPartitionLifetime(newDefaultPartitionLifetime);
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         resource, updateParameters, user.getAuthenticatedRequest(), newName, newDescription);
 
     // check the properties stored on the cloud were updated
@@ -844,7 +846,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .datasetName(datasetId)
             .build();
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
     assertEquals(resource, createdDataset);
 
@@ -872,7 +874,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     assertThrows(
         InvalidResultStateException.class,
         () ->
-            controlledResourceService.updateBqDataset(
+            controlledGcpResourceService.updateBqDataset(
                 resource,
                 updateParameters,
                 user.getAuthenticatedRequest(),
@@ -925,7 +927,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .datasetName(datasetId)
             .build();
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
 
     // check the expiration times stored on the cloud are defined
@@ -941,7 +943,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
         new ApiGcpBigQueryDatasetUpdateParameters()
             .defaultTableLifetime(0)
             .defaultPartitionLifetime(0);
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         resource, updateParameters, user.getAuthenticatedRequest(), null, null);
 
     // check the expiration times stored on the cloud are now undefined
@@ -952,7 +954,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     Integer newDefaultTableLifetime = 3600;
     updateParameters =
         new ApiGcpBigQueryDatasetUpdateParameters().defaultTableLifetime(newDefaultTableLifetime);
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         resource, updateParameters, user.getAuthenticatedRequest(), null, null);
 
     // check there is one defined and one undefined expiration value
@@ -964,7 +966,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     updateParameters =
         new ApiGcpBigQueryDatasetUpdateParameters()
             .defaultPartitionLifetime(newDefaultPartitionLifetime);
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         resource, updateParameters, user.getAuthenticatedRequest(), null, null);
 
     // check the expiration times stored on the cloud are both defined again
@@ -996,7 +998,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
             .datasetName(datasetId)
             .build();
     ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             resource, creationParameters, Collections.emptyList(), user.getAuthenticatedRequest());
 
     // make an update request to set the table expiration time to an invalid value (<3600)
@@ -1007,7 +1009,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     assertThrows(
         BadRequestException.class,
         () ->
-            controlledResourceService.updateBqDataset(
+            controlledGcpResourceService.updateBqDataset(
                 resource, updateParameters, user.getAuthenticatedRequest(), null, null));
 
     // check the expiration times stored on the cloud are still undefined, because the update above
@@ -1023,7 +1025,7 @@ public class ControlledResourceServiceTest extends BaseConnectedTest {
     assertThrows(
         BadRequestException.class,
         () ->
-            controlledResourceService.updateBqDataset(
+            controlledGcpResourceService.updateBqDataset(
                 resource, updateParameters2, user.getAuthenticatedRequest(), null, null));
 
     // check the expiration times stored on the cloud are still undefined, because the update above

@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,6 +9,8 @@ import bio.terra.stairway.FlightMap;
 import bio.terra.workspace.common.BaseUnitTest;
 import bio.terra.workspace.common.fixtures.ControlledResourceFixtures;
 import bio.terra.workspace.generated.model.ApiGcpAiNotebookInstanceResource;
+import bio.terra.workspace.service.resource.controlled.AccessScopeType;
+import bio.terra.workspace.service.resource.controlled.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.referenced.exception.InvalidReferenceException;
 import org.junit.jupiter.api.Test;
 

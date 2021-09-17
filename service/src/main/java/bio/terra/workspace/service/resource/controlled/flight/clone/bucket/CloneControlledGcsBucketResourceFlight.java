@@ -5,11 +5,11 @@ import bio.terra.stairway.FlightMap;
 import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.job.JobMapKeys;
-import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 
 public class CloneControlledGcsBucketResourceFlight extends Flight {
 
@@ -46,7 +46,10 @@ public class CloneControlledGcsBucketResourceFlight extends Flight {
             RetrievalMode.CREATION_PARAMETERS));
     addStep(
         new CopyGcsBucketDefinitionStep(
-            userRequest, sourceBucket, flightBeanBag.getControlledResourceService()));
+            userRequest,
+            sourceBucket,
+            flightBeanBag.getControlledResourceService(),
+            flightBeanBag.getControlledGcpResourceService()));
     addStep(
         new SetBucketRolesStep(
             sourceBucket,

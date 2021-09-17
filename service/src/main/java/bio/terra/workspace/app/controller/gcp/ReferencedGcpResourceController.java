@@ -1,5 +1,6 @@
-package bio.terra.workspace.app.controller;
+package bio.terra.workspace.app.controller.gcp;
 
+import bio.terra.workspace.app.controller.ResourceController;
 import bio.terra.workspace.generated.controller.ReferencedGcpResourceApi;
 import bio.terra.workspace.generated.model.ApiCloneReferencedGcpBigQueryDatasetResourceResult;
 import bio.terra.workspace.generated.model.ApiCloneReferencedGcpDataRepoSnapshotResourceResult;

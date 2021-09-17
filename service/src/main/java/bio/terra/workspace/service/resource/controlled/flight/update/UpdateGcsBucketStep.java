@@ -1,7 +1,7 @@
 package bio.terra.workspace.service.resource.controlled.flight.update;
 
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toGcsApi;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toGcsApiRulesList;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGcsApi;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGcsApiRulesList;
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.PREVIOUS_UPDATE_PARAMETERS;
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.UPDATE_PARAMETERS;
 
@@ -15,7 +15,7 @@ import bio.terra.stairway.StepStatus;
 import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketUpdateParameters;
 import bio.terra.workspace.service.crl.CrlService;
-import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import com.google.cloud.storage.BucketInfo.LifecycleRule;
 import com.google.cloud.storage.StorageClass;

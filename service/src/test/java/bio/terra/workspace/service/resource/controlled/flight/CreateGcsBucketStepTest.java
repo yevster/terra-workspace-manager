@@ -2,7 +2,7 @@ package bio.terra.workspace.service.resource.controlled.flight;
 
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.getGoogleBucketCreationParameters;
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.uniqueName;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toGoogleDateTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGoogleDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;

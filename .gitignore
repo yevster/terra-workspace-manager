@@ -21,6 +21,7 @@ HELP.md
 *.ipr
 out/
 
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -39,3 +40,6 @@ out/
 
 ### write-config script output
 config/
+
+### swaggercodegen
+/*/bin/
