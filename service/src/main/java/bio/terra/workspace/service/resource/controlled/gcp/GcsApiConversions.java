@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import bio.terra.common.exception.BadRequestException;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketCreationParameters;

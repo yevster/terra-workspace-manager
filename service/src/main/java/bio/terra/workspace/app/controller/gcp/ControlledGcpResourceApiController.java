@@ -1,4 +1,4 @@
-package bio.terra.workspace.app.controller;
+package bio.terra.workspace.app.controller.gcp;
 
 import bio.terra.common.exception.BadRequestException;
 import bio.terra.common.exception.ValidationException;
@@ -43,11 +43,12 @@ import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
 import bio.terra.workspace.service.resource.controlled.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.ControlledBigQueryDatasetResource;
-import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.controlled.exception.InvalidControlledResourceException;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import java.util.Collections;
@@ -71,6 +72,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
 
   private final AuthenticatedUserRequestFactory authenticatedUserRequestFactory;
   private final ControlledResourceService controlledResourceService;
+  private final ControlledGcpResourceService controlledGcpResourceService;
   private final SamService samService;
   private final WorkspaceService workspaceService;
   private final HttpServletRequest request;
@@ -80,12 +82,14 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
   public ControlledGcpResourceApiController(
       AuthenticatedUserRequestFactory authenticatedUserRequestFactory,
       ControlledResourceService controlledResourceService,
+      ControlledGcpResourceService controlledGcpResourceService,
       SamService samService,
       WorkspaceService workspaceService,
       JobService jobService,
       HttpServletRequest request) {
     this.authenticatedUserRequestFactory = authenticatedUserRequestFactory;
     this.controlledResourceService = controlledResourceService;
+    this.controlledGcpResourceService = controlledGcpResourceService;
     this.samService = samService;
     this.workspaceService = workspaceService;
     this.request = request;
@@ -114,7 +118,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
     List<ControlledResourceIamRole> privateRoles = privateRolesFromBody(body.getCommon());
 
     final ControlledGcsBucketResource createdBucket =
-        controlledResourceService.createBucket(
+        controlledGcpResourceService.createBucket(
             resource, body.getGcsBucket(), privateRoles, userRequest);
     var response =
         new ApiCreatedControlledGcpGcsBucket()
@@ -188,7 +192,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
           String.format("Resource %s is not a GCS Bucket", resourceId));
     }
     final ControlledGcsBucketResource bucketResource = resource.castToGcsBucketResource();
-    controlledResourceService.updateGcsBucket(
+    controlledGcpResourceService.updateGcsBucket(
         bucketResource,
         body.getUpdateParameters(),
         userRequest,
@@ -207,7 +211,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
 
     final AuthenticatedUserRequest userRequest = getAuthenticatedInfo();
     final String jobId =
-        controlledResourceService.cloneGcsBucket(
+        controlledGcpResourceService.cloneGcsBucket(
             workspaceId,
             resourceId,
             body.getDestinationWorkspaceId(),
@@ -270,7 +274,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
     }
     final ControlledBigQueryDatasetResource datasetResource =
         resource.castToBigQueryDatasetResource();
-    controlledResourceService.updateBqDataset(
+    controlledGcpResourceService.updateBqDataset(
         datasetResource,
         body.getUpdateParameters(),
         userRequest,
@@ -339,7 +343,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
     List<ControlledResourceIamRole> privateRoles = privateRolesFromBody(body.getCommon());
 
     final ControlledBigQueryDatasetResource createdDataset =
-        controlledResourceService
+        controlledGcpResourceService
             .createBigQueryDataset(resource, body.getDataset(), privateRoles, userRequest)
             .castToBigQueryDatasetResource();
     var response =
@@ -385,7 +389,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
     List<ControlledResourceIamRole> privateRoles = privateRolesFromBody(body.getCommon());
 
     String jobId =
-        controlledResourceService.createAiNotebookInstance(
+        controlledGcpResourceService.createAiNotebookInstance(
             resource,
             body.getAiNotebookInstance(),
             privateRoles,
@@ -496,7 +500,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
       UUID workspaceId, UUID resourceId, @Valid ApiCloneControlledGcpBigQueryDatasetRequest body) {
     final AuthenticatedUserRequest userRequest = getAuthenticatedInfo();
     final String jobId =
-        controlledResourceService.cloneBigQueryDataset(
+        controlledGcpResourceService.cloneBigQueryDataset(
             workspaceId,
             resourceId,
             body.getDestinationWorkspaceId(),

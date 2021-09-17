@@ -12,8 +12,9 @@ import bio.terra.workspace.generated.model.ApiCreatedControlledGcpGcsBucket;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketCreationParameters;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
-import bio.terra.workspace.service.resource.controlled.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import java.util.List;
@@ -26,14 +27,17 @@ public class CopyGcsBucketDefinitionStep implements Step {
   private final AuthenticatedUserRequest userRequest;
   private final ControlledGcsBucketResource sourceBucket;
   private final ControlledResourceService controlledResourceService;
+  private final ControlledGcpResourceService controlledGcpResourceService;
 
   public CopyGcsBucketDefinitionStep(
       AuthenticatedUserRequest userRequest,
       ControlledGcsBucketResource sourceBucket,
-      ControlledResourceService controlledResourceService) {
+      ControlledResourceService controlledResourceService,
+      ControlledGcpResourceService controlledGcpResourceService) {
     this.userRequest = userRequest;
     this.sourceBucket = sourceBucket;
     this.controlledResourceService = controlledResourceService;
+    this.controlledGcpResourceService = controlledGcpResourceService;
   }
 
   @Override
@@ -100,7 +104,7 @@ public class CopyGcsBucketDefinitionStep implements Step {
 
     // Launch a CreateControlledResourcesFlight to make the destination bucket
     final ControlledGcsBucketResource clonedBucket =
-        controlledResourceService.createBucket(
+        controlledGcpResourceService.createBucket(
             destinationBucketResource, destinationCreationParameters, iamRoles, userRequest);
     workingMap.put(ControlledResourceKeys.CLONED_RESOURCE_DEFINITION, clonedBucket);
     // TODO: create new type & use it here

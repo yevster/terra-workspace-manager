@@ -52,8 +52,7 @@ public class IamDao {
   }
 
   /**
-   * Support for isAuthorized. Get the workspace id from the resource id via the
-   * resource table.
+   * Support for isAuthorized. Get the workspace id from the resource id via the resource table.
    *
    * @param resourceId string of resource id
    * @return optional UUID of workspace id
@@ -61,17 +60,15 @@ public class IamDao {
   @ReadTransaction
   public Optional<UUID> getWorkspaceIdFromResourceId(String resourceId) {
     final String sql = "SELECT workspace_id FROM resource WHERE resource_id = :resource_id";
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("resource_id", resourceId);
-      try {
-        return Optional.ofNullable(
-            DataAccessUtils.singleResult(
-                jdbcTemplate.query(
-                    sql,
-                    params,
-                    (rs, rowNum) -> UUID.fromString(rs.getString("workspace_id")))));
-      } catch (EmptyResultDataAccessException e) {
-        return Optional.empty();
-      }
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("resource_id", resourceId);
+    try {
+      return Optional.ofNullable(
+          DataAccessUtils.singleResult(
+              jdbcTemplate.query(
+                  sql, params, (rs, rowNum) -> UUID.fromString(rs.getString("workspace_id")))));
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -177,7 +174,6 @@ public class IamDao {
     Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
     return (count != null && count > 0);
   }
-
 
   private void addUser(PocUser pocUser) {
     Optional<PocUser> optionalPocUser = getUser(pocUser.getUserId());

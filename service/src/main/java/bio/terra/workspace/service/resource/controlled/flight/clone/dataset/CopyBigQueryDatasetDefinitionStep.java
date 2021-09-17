@@ -13,6 +13,7 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
 import bio.terra.workspace.service.resource.controlled.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
@@ -25,16 +26,19 @@ public class CopyBigQueryDatasetDefinitionStep implements Step {
 
   private final ControlledBigQueryDatasetResource sourceDataset;
   private final ControlledResourceService controlledResourceService;
+  private final ControlledGcpResourceService controlledGcpResourceService;
   private final AuthenticatedUserRequest userRequest;
   private final WorkspaceService workspaceService;
 
   public CopyBigQueryDatasetDefinitionStep(
       ControlledBigQueryDatasetResource sourceDataset,
       ControlledResourceService controlledResourceService,
+      ControlledGcpResourceService controlledGcpResourceService,
       AuthenticatedUserRequest userRequest,
       WorkspaceService workspaceService) {
     this.sourceDataset = sourceDataset;
     this.controlledResourceService = controlledResourceService;
+    this.controlledGcpResourceService = controlledGcpResourceService;
     this.userRequest = userRequest;
     this.workspaceService = workspaceService;
   }
@@ -104,7 +108,7 @@ public class CopyBigQueryDatasetDefinitionStep implements Step {
         IamRoleUtils.getIamRolesForAccessScope(destinationResource.getAccessScope());
 
     final ControlledBigQueryDatasetResource clonedResource =
-        controlledResourceService.createBigQueryDataset(
+        controlledGcpResourceService.createBigQueryDataset(
             destinationResource, creationParameters, iamRoles, userRequest);
 
     workingMap.put(ControlledResourceKeys.CLONED_RESOURCE_DEFINITION, clonedResource);

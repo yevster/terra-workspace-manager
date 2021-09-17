@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.BUCKET_UPDATE_PARAMETERS_EMPTY;
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.DATE_TIME_1;
@@ -12,13 +12,13 @@ import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.OFF
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.OFFSET_DATE_TIME_2;
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.WSM_LIFECYCLE_RULE_CONDITION_1;
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.uniqueBucketName;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.getStorageClass;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toBucketInfo;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toGcsApi;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toGoogleDateTime;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toOffsetDateTime;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toUpdateParameters;
-import static bio.terra.workspace.service.resource.controlled.GcsApiConversions.toWsmApi;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.getStorageClass;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toBucketInfo;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGcsApi;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGoogleDateTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toOffsetDateTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toUpdateParameters;
+import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toWsmApi;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;

@@ -66,9 +66,7 @@ public class SamService {
 
   @Autowired
   public SamService(
-      SamConfiguration samConfig,
-      StageService stageService,
-      MockSamService mockSamService) {
+      SamConfiguration samConfig, StageService stageService, MockSamService mockSamService) {
     this.samConfig = samConfig;
     this.stageService = stageService;
     this.mockSamService = mockSamService;
