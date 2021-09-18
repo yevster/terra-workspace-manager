@@ -1,6 +1,6 @@
 package bio.terra.workspace.service.resource.controlled.flight.update;
 
-import static bio.terra.workspace.service.resource.controlled.BigQueryApiConversions.fromBqExpirationTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions.fromBqExpirationTime;
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.PREVIOUS_UPDATE_PARAMETERS;
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.UPDATE_PARAMETERS;
 
@@ -13,8 +13,8 @@ import bio.terra.stairway.StepStatus;
 import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetUpdateParameters;
 import bio.terra.workspace.service.crl.CrlService;
-import bio.terra.workspace.service.resource.controlled.BigQueryApiConversions;
-import bio.terra.workspace.service.resource.controlled.ControlledBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import com.google.api.services.bigquery.model.Dataset;
 import java.io.IOException;

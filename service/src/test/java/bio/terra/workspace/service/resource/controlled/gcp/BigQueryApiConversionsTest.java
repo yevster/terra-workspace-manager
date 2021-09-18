@@ -2,9 +2,9 @@ package bio.terra.workspace.service.resource.controlled.gcp;
 
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.BQ_DATASET_WITHOUT_EXPIRATION;
 import static bio.terra.workspace.common.fixtures.ControlledResourceFixtures.BQ_DATASET_WITH_EXPIRATION;
-import static bio.terra.workspace.service.resource.controlled.BigQueryApiConversions.fromBqExpirationTime;
-import static bio.terra.workspace.service.resource.controlled.BigQueryApiConversions.toBqExpirationTime;
-import static bio.terra.workspace.service.resource.controlled.BigQueryApiConversions.toUpdateParameters;
+import static bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions.fromBqExpirationTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions.toBqExpirationTime;
+import static bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions.toUpdateParameters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

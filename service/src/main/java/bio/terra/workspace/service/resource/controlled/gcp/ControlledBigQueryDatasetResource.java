@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import bio.terra.common.exception.InconsistentFieldsException;
 import bio.terra.common.exception.MissingRequiredFieldException;
@@ -8,6 +8,9 @@ import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetAttributes;
 import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
+import bio.terra.workspace.service.resource.controlled.AccessScopeType;
+import bio.terra.workspace.service.resource.controlled.ControlledResource;
+import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,6 +51,12 @@ public class ControlledBigQueryDatasetResource extends ControlledResource {
         DbSerDes.fromJson(dbResource.getAttributes(), ControlledBigQueryDatasetAttributes.class);
     this.datasetName = attributes.getDatasetName();
     validate();
+  }
+
+  // Double-checked down casts when we need to re-specialize from a ControlledResource
+  public static ControlledGcsBucketResource cast(ControlledResource resource) {
+    validateSubclass(resource, WsmResourceType.GCS_BUCKET);
+    return (ControlledGcsBucketResource) resource;
   }
 
   public static ControlledBigQueryDatasetResource.Builder builder() {
