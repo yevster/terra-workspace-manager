@@ -10,7 +10,6 @@ import bio.terra.workspace.generated.model.ApiResourceMetadata;
 import bio.terra.workspace.service.resource.WsmResource;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.exception.ControlledResourceNotImplementedException;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.resource.model.StewardshipType;
 import java.util.Objects;
