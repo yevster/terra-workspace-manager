@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetUpdateParameters;
 import com.google.api.services.bigquery.model.Dataset;

@@ -10,7 +10,6 @@ import bio.terra.workspace.generated.model.ApiResourceMetadata;
 import bio.terra.workspace.service.resource.WsmResource;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.exception.ControlledResourceNotImplementedException;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.resource.model.StewardshipType;
 import java.util.Objects;
@@ -109,26 +108,11 @@ public abstract class ControlledResource extends WsmResource {
     }
   }
 
-  // Double-checked down casts when we need to re-specialize from a ControlledResource
-  public ControlledGcsBucketResource castToGcsBucketResource() {
-    validateSubclass(WsmResourceType.GCS_BUCKET);
-    return (ControlledGcsBucketResource) this;
-  }
-
-  public ControlledAiNotebookInstanceResource castToAiNotebookInstanceResource() {
-    validateSubclass(WsmResourceType.AI_NOTEBOOK_INSTANCE);
-    return (ControlledAiNotebookInstanceResource) this;
-  }
-
-  public ControlledBigQueryDatasetResource castToBigQueryDatasetResource() {
-    validateSubclass(WsmResourceType.BIG_QUERY_DATASET);
-    return (ControlledBigQueryDatasetResource) this;
-  }
-
-  private void validateSubclass(WsmResourceType expectedType) {
-    if (getResourceType() != expectedType) {
+  protected static void validateSubclass(
+      ControlledResource resourceType, WsmResourceType expectedType) {
+    if (resourceType.getResourceType() != expectedType) {
       throw new InvalidMetadataException(
-          String.format("Expected %s, found %s", expectedType, getResourceType()));
+          String.format("Expected %s, found %s", expectedType, resourceType.getResourceType()));
     }
   }
 

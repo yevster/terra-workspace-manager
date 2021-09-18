@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled;
+package bio.terra.workspace.service.resource.controlled.gcp;
 
 import bio.terra.cloudres.google.notebooks.InstanceName;
 import bio.terra.common.exception.BadRequestException;
@@ -10,6 +10,9 @@ import bio.terra.workspace.generated.model.ApiGcpAiNotebookInstanceAttributes;
 import bio.terra.workspace.generated.model.ApiGcpAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
+import bio.terra.workspace.service.resource.controlled.AccessScopeType;
+import bio.terra.workspace.service.resource.controlled.ControlledResource;
+import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -89,6 +92,12 @@ public class ControlledAiNotebookInstanceResource extends ControlledResource {
         .projectId(workspaceProjectId)
         .location(getLocation())
         .instanceId(getInstanceId());
+  }
+
+  // Double-checked down casts when we need to re-specialize from a ControlledResource
+  public static ControlledAiNotebookInstanceResource cast(ControlledResource resource) {
+    validateSubclass(resource, WsmResourceType.AI_NOTEBOOK_INSTANCE);
+    return (ControlledAiNotebookInstanceResource) resource;
   }
 
   @Override
