@@ -1,15 +1,19 @@
 package bio.terra.workspace.service;
 
+import bio.terra.common.exception.UnauthorizedException;
+import bio.terra.common.sam.exception.SamBadRequestException;
 import bio.terra.workspace.app.configuration.external.AzureState;
 import bio.terra.workspace.db.IamDao;
 import bio.terra.workspace.db.IamDao.PocUser;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest.AuthType;
+import bio.terra.workspace.service.iam.model.RoleBinding;
 import bio.terra.workspace.service.iam.model.SamConstants;
 import bio.terra.workspace.service.iam.model.SamConstants.SamControlledResourceActions;
 import bio.terra.workspace.service.iam.model.WsmIamRole;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceCategory;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +56,29 @@ public class MockSamService {
     iamDao.deleteWorkspace(id);
   }
 
+  public void grantWorkspaceRole(
+      UUID workspaceId, AuthenticatedUserRequest userRequest, WsmIamRole role, String email) {
+    PocUser pocUser = getPocUserFromEmail(email);
+    iamDao.grantRole(workspaceId, role, pocUser);
+  }
+
+  public List<RoleBinding> listRoleBindings(UUID workspaceId) {
+    List<RoleBinding> roleBindings = new ArrayList<>();
+    roleBindings.add(getOneRoleBinding(workspaceId, WsmIamRole.OWNER));
+    roleBindings.add(getOneRoleBinding(workspaceId, WsmIamRole.WRITER));
+    roleBindings.add(getOneRoleBinding(workspaceId, WsmIamRole.READER));
+    roleBindings.add(getOneRoleBinding(workspaceId, WsmIamRole.APPLICATION));
+    return roleBindings;
+  }
+
+  private RoleBinding getOneRoleBinding(UUID workspaceId, WsmIamRole role) {
+    List<String> users = iamDao.listRoleUsers(workspaceId, role);
+    return RoleBinding.builder()
+        .role(role)
+        .users(users)
+        .build();
+  }
+
   public List<UUID> listWorkspaceIds(AuthenticatedUserRequest userRequest) {
     return iamDao.listAccessible(new PocUser(userRequest));
   }
@@ -80,7 +107,12 @@ public class MockSamService {
           return iamDao.roleCheck(workspaceId, List.of(WsmIamRole.OWNER), userId);
 
           // workspace owner or writer actions
+        // TODO: Why do we have actions for referenced resources, but no actions
+        //  for controlled resources? Or are those not in the constants file?
         case SamConstants.SAM_WORKSPACE_WRITE_ACTION:
+        case SamConstants.SAM_CREATE_REFERENCED_RESOURCE:
+        case SamConstants.SAM_UPDATE_REFERENCED_RESOURCE:
+        case SamConstants.SAM_DELETE_REFERENCED_RESOURCE:
           return iamDao.roleCheck(
               workspaceId, List.of(WsmIamRole.OWNER, WsmIamRole.WRITER), userId);
 
@@ -90,7 +122,11 @@ public class MockSamService {
               workspaceId, List.of(WsmIamRole.OWNER, WsmIamRole.WRITER, WsmIamRole.READER), userId);
 
         default:
-          throw new IllegalStateException("Unexpected action on workspace: " + action);
+          // All share_policy variants require owner
+          if (StringUtils.startsWith(action, "share_policy:")) {
+            return iamDao.roleCheck(workspaceId, List.of(WsmIamRole.OWNER), userId);
+          }
+          throw new UnauthorizedException("Unexpected action on workspace: " + action);
       }
     }
 
@@ -117,6 +153,11 @@ public class MockSamService {
               workspaceId, List.of(WsmIamRole.OWNER, WsmIamRole.WRITER, WsmIamRole.READER), userId);
 
         default:
+          // All share_policy variants require owner
+          if (StringUtils.startsWith(action, "share_policy:")) {
+            return iamDao.roleCheck(workspaceId, List.of(WsmIamRole.OWNER), userId);
+          }
+
           throw new IllegalStateException("Unexpected action on resource: " + action);
       }
     }
@@ -124,4 +165,18 @@ public class MockSamService {
     // For now, we do not support other resource types in the Azure PoC
     throw new IllegalStateException("We only support user shared resources in the PoC right now");
   }
+
+  public void removeWorkspaceRole(
+      UUID workspaceId, AuthenticatedUserRequest userRequest, WsmIamRole role, String email) {
+    PocUser pocUser = getPocUserFromEmail(email);
+    iamDao.revokeRole(workspaceId, role, pocUser.getUserId());
+  }
+
+  private PocUser getPocUserFromEmail(String email) {
+    return iamDao
+        .getUserFromEmail(email)
+        .orElseThrow(() -> new SamBadRequestException("User not found: " + email));
+  }
+
+
 }

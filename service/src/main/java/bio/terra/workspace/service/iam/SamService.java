@@ -66,9 +66,7 @@ public class SamService {
 
   @Autowired
   public SamService(
-      SamConfiguration samConfig,
-      StageService stageService,
-      MockSamService mockSamService) {
+      SamConfiguration samConfig, StageService stageService, MockSamService mockSamService) {
     this.samConfig = samConfig;
     this.stageService = stageService;
     this.mockSamService = mockSamService;
@@ -341,7 +339,9 @@ public class SamService {
       AuthenticatedUserRequest userRequest, String resourceType, String resourceId, String action)
       throws InterruptedException {
     boolean isAuthorized = isAuthorized(userRequest, resourceType, resourceId, action);
-    final String userEmail = getEmailFromToken(userRequest.getRequiredToken());
+    // TODO: AzurePOC: Understand why we get email from token here, instead of getRequestUserEmail
+    //  Changing to get from request for the poc.
+    final String userEmail = getRequestUserEmail(userRequest);
     if (!isAuthorized)
       throw new UnauthorizedException(
           String.format(
@@ -378,6 +378,12 @@ public class SamService {
         SamConstants.SAM_WORKSPACE_RESOURCE,
         workspaceId.toString(),
         samActionToModifyRole(role));
+
+    if (mockSamService.useMock(userRequest)) {
+      mockSamService.grantWorkspaceRole(workspaceId, userRequest, role, email);
+      return;
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     try {
       SamRetry.retry(
@@ -411,6 +417,12 @@ public class SamService {
         SamConstants.SAM_WORKSPACE_RESOURCE,
         workspaceId.toString(),
         samActionToModifyRole(role));
+
+    if (mockSamService.useMock(userRequest)) {
+      mockSamService.removeWorkspaceRole(workspaceId, userRequest, role, email);
+      return;
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     try {
       SamRetry.retry(
@@ -549,6 +561,11 @@ public class SamService {
         SamConstants.SAM_WORKSPACE_RESOURCE,
         workspaceId.toString(),
         SamConstants.SAM_WORKSPACE_READ_IAM_ACTION);
+
+    if (mockSamService.useMock(userRequest)) {
+      return mockSamService.listRoleBindings(workspaceId);
+    }
+
     ResourcesApi resourceApi = samResourcesApi(userRequest.getRequiredToken());
     try {
       List<AccessPolicyResponseEntry> samResult =

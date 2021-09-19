@@ -52,8 +52,7 @@ public class IamDao {
   }
 
   /**
-   * Support for isAuthorized. Get the workspace id from the resource id via the
-   * resource table.
+   * Support for isAuthorized. Get the workspace id from the resource id via the resource table.
    *
    * @param resourceId string of resource id
    * @return optional UUID of workspace id
@@ -61,17 +60,15 @@ public class IamDao {
   @ReadTransaction
   public Optional<UUID> getWorkspaceIdFromResourceId(String resourceId) {
     final String sql = "SELECT workspace_id FROM resource WHERE resource_id = :resource_id";
-      MapSqlParameterSource params = new MapSqlParameterSource().addValue("resource_id", resourceId);
-      try {
-        return Optional.ofNullable(
-            DataAccessUtils.singleResult(
-                jdbcTemplate.query(
-                    sql,
-                    params,
-                    (rs, rowNum) -> UUID.fromString(rs.getString("workspace_id")))));
-      } catch (EmptyResultDataAccessException e) {
-        return Optional.empty();
-      }
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("resource_id", resourceId);
+    try {
+      return Optional.ofNullable(
+          DataAccessUtils.singleResult(
+              jdbcTemplate.query(
+                  sql, params, (rs, rowNum) -> UUID.fromString(rs.getString("workspace_id")))));
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -163,6 +160,21 @@ public class IamDao {
    */
   @ReadTransaction
   public boolean roleCheck(UUID workspaceId, List<WsmIamRole> roles, String userId) {
+    return roleCheckWorker(workspaceId, roles, userId);
+  }
+
+  /**
+   * @param workspaceId workspace the grant is for
+   * @param role the Iam role to check
+   * @param userId user id to check
+   * @return true if the user has the role; false otherwise
+   */
+  @ReadTransaction
+  public boolean roleCheck(UUID workspaceId, WsmIamRole role, String userId) {
+    return roleCheckWorker(workspaceId, List.of(role), userId);
+  }
+
+  private boolean roleCheckWorker(UUID workspaceId, List<WsmIamRole> roles, String userId) {
     final String sql =
         "SELECT COUNT(*) FROM poc_grant"
             + " WHERE workspace_id = :workspace_id AND user_id = :user_id AND iam_role IN (:iam_roles)";
@@ -178,8 +190,7 @@ public class IamDao {
     return (count != null && count > 0);
   }
 
-
-  private void addUser(PocUser pocUser) {
+  public void addUser(PocUser pocUser) {
     Optional<PocUser> optionalPocUser = getUser(pocUser.getUserId());
     if (optionalPocUser.isPresent()) {
       if ((StringUtils.equalsIgnoreCase(optionalPocUser.get().email, pocUser.getEmail()))) {
@@ -199,10 +210,38 @@ public class IamDao {
     jdbcTemplate.update(sql, params);
   }
 
+  // Return the emails of users with the requested role
+  public List<String> listRoleUsers(UUID workspaceId, WsmIamRole role) {
+    final String sql =
+        "SELECT poc_user.email FROM poc_user INNER JOIN poc_grant USING (user_id)"
+            + " WHERE poc_grant.workspace_id = :workspace_id"
+            + " AND poc_grant.iam_role = :role";
+
+    MapSqlParameterSource params =
+        new MapSqlParameterSource()
+            .addValue("workspace_id", workspaceId.toString())
+            .addValue("role", role.toSamRole());
+
+    return jdbcTemplate.query(
+        sql,
+        params,
+        (rs, rowNum) -> rs.getString("email"));
+  }
+
+  public Optional<PocUser> getUserFromEmail(String email) {
+    final String sql = "SELECT user_id, email FROM poc_user WHERE email = :email";
+    MapSqlParameterSource params = new MapSqlParameterSource().addValue("email", email);
+    return getUserWorker(sql, params);
+  }
+
   private Optional<PocUser> getUser(String userId) {
     final String sql = "SELECT user_id, email FROM poc_user WHERE user_id = :user_id";
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", userId);
+    return getUserWorker(sql, params);
+  }
 
+
+  private Optional<PocUser> getUserWorker(String sql, MapSqlParameterSource params) {
     try {
       return Optional.ofNullable(
           DataAccessUtils.singleResult(

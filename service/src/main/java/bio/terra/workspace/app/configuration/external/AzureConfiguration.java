@@ -22,6 +22,8 @@ public class AzureConfiguration {
   /** clientSecret for access to the MRG */
   private String clientSecret;
 
+  // -- accessors -- //
+
   public String getTenantId() {
     return tenantId;
   }

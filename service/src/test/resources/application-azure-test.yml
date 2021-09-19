@@ -1,0 +1,10 @@
+workspace:
+  // TODO: replace these with real users
+  azure-test:
+    azureusers:
+      -
+        email: fred@notonmicrosoft.com
+        objectId: fredsid
+      -
+        email: wilma@notonmicrosoft.com
+        objectId: wilmasid
