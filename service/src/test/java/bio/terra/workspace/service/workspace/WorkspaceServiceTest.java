@@ -399,9 +399,11 @@ class WorkspaceServiceTest extends BaseConnectedTest {
         request.workspaceId(), jobId, USER_REQUEST, "/fake/value");
     jobService.waitForJob(jobId);
     assertNull(jobService.retrieveJobResult(jobId, Object.class, USER_REQUEST).getException());
-    Workspace workspace = workspaceService.getWorkspace(request.workspaceId(), USER_REQUEST);
     String projectId =
-        workspace.getGcpCloudContext().map(GcpCloudContext::getGcpProjectId).orElse(null);
+        workspaceService
+            .getGcpCloudContext(request.workspaceId())
+            .map(GcpCloudContext::getGcpProjectId)
+            .orElse(null);
     assertNotNull(projectId);
 
     // Verify project exists by retrieving it.
@@ -429,12 +431,10 @@ class WorkspaceServiceTest extends BaseConnectedTest {
         request.workspaceId(), jobId, USER_REQUEST, "/fake/value");
     jobService.waitForJob(jobId);
     assertNull(jobService.retrieveJobResult(jobId, Object.class, USER_REQUEST).getException());
-    Workspace workspace = workspaceService.getWorkspace(request.workspaceId(), USER_REQUEST);
-    assertTrue(workspace.getGcpCloudContext().isPresent());
+    assertTrue(workspaceService.getGcpCloudContext(request.workspaceId()).isPresent());
 
     workspaceService.deleteGcpCloudContext(request.workspaceId(), USER_REQUEST);
-    workspace = workspaceService.getWorkspace(request.workspaceId(), USER_REQUEST);
-    assertTrue(workspace.getGcpCloudContext().isEmpty());
+    assertTrue(workspaceService.getGcpCloudContext(request.workspaceId()).isEmpty());
   }
 
   @Test

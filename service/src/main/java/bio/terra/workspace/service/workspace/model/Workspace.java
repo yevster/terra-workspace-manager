@@ -16,7 +16,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  * <p>A workspace is a collection of resources, data references, and applications with some shared
  * context. In general, a workspace is the fundamental unit of analysis in Terra. Workspaces may
- * have an associated billing account and may have zero or one associated GCP projects.
+ * have an associated billing account. Workspaces may have zero or one GCP cloud context and zero or
+ * one Azure cloud context.
  */
 @JsonDeserialize(builder = Workspace.Builder.class)
 public class Workspace {
@@ -26,7 +27,6 @@ public class Workspace {
   private final SpendProfileId spendProfileId;
   private final Map<String, String> properties;
   private final WorkspaceStage workspaceStage;
-  private final GcpCloudContext gcpCloudContext;
 
   public Workspace(
       UUID workspaceId,
@@ -34,15 +34,13 @@ public class Workspace {
       String description,
       SpendProfileId spendProfileId,
       Map<String, String> properties,
-      WorkspaceStage workspaceStage,
-      GcpCloudContext gcpCloudContext) {
+      WorkspaceStage workspaceStage) {
     this.workspaceId = workspaceId;
     this.displayName = displayName;
     this.description = description;
     this.spendProfileId = spendProfileId;
     this.properties = properties;
     this.workspaceStage = workspaceStage;
-    this.gcpCloudContext = gcpCloudContext;
   }
 
   /** The globally unique identifier of this workspace */
@@ -81,11 +79,6 @@ public class Workspace {
     return workspaceStage;
   }
 
-  /** Optional GCP cloud context */
-  public Optional<GcpCloudContext> getGcpCloudContext() {
-    return Optional.ofNullable(gcpCloudContext);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -101,7 +94,6 @@ public class Workspace {
         .append(spendProfileId, workspace.spendProfileId)
         .append(properties, workspace.properties)
         .append(workspaceStage, workspace.workspaceStage)
-        .append(gcpCloudContext, workspace.gcpCloudContext)
         .isEquals();
   }
 
@@ -114,7 +106,6 @@ public class Workspace {
         .append(spendProfileId)
         .append(properties)
         .append(workspaceStage)
-        .append(gcpCloudContext)
         .toHashCode();
   }
 
@@ -130,7 +121,6 @@ public class Workspace {
     private SpendProfileId spendProfileId;
     private Map<String, String> properties;
     private WorkspaceStage workspaceStage;
-    private GcpCloudContext gcpCloudContext;
 
     public Builder workspaceId(UUID workspaceId) {
       this.workspaceId = workspaceId;
@@ -162,11 +152,6 @@ public class Workspace {
       return this;
     }
 
-    public Builder gcpCloudContext(GcpCloudContext gcpCloudContext) {
-      this.gcpCloudContext = gcpCloudContext;
-      return this;
-    }
-
     public Workspace build() {
       // Always have a map, even if it is empty
       if (properties == null) {
@@ -176,13 +161,7 @@ public class Workspace {
         throw new MissingRequiredFieldsException("Workspace requires id and stage");
       }
       return new Workspace(
-          workspaceId,
-          displayName,
-          description,
-          spendProfileId,
-          properties,
-          workspaceStage,
-          gcpCloudContext);
+          workspaceId, displayName, description, spendProfileId, properties, workspaceStage);
     }
   }
 }

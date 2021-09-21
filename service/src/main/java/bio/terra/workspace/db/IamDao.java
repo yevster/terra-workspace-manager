@@ -222,10 +222,7 @@ public class IamDao {
             .addValue("workspace_id", workspaceId.toString())
             .addValue("role", role.toSamRole());
 
-    return jdbcTemplate.query(
-        sql,
-        params,
-        (rs, rowNum) -> rs.getString("email"));
+    return jdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getString("email"));
   }
 
   public Optional<PocUser> getUserFromEmail(String email) {
@@ -239,7 +236,6 @@ public class IamDao {
     MapSqlParameterSource params = new MapSqlParameterSource().addValue("user_id", userId);
     return getUserWorker(sql, params);
   }
-
 
   private Optional<PocUser> getUserWorker(String sql, MapSqlParameterSource params) {
     try {

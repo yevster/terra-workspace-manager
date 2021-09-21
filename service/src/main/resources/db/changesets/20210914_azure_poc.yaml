@@ -55,3 +55,13 @@ databaseChangeLog:
         constraintName: pk_grant
         remarks: |
           Define the multi-column PK
+
+    - addColumn:
+        tableName: cloud_context
+        columns:
+          - column:
+              name: creating_flight
+              type: text
+              remarks: |
+                This is used to ensure that when undoing a failing cloud context create
+                flight, we do not delete an existing cloud context.

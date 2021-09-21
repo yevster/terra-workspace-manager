@@ -73,10 +73,7 @@ public class MockSamService {
 
   private RoleBinding getOneRoleBinding(UUID workspaceId, WsmIamRole role) {
     List<String> users = iamDao.listRoleUsers(workspaceId, role);
-    return RoleBinding.builder()
-        .role(role)
-        .users(users)
-        .build();
+    return RoleBinding.builder().role(role).users(users).build();
   }
 
   public List<UUID> listWorkspaceIds(AuthenticatedUserRequest userRequest) {
@@ -107,8 +104,8 @@ public class MockSamService {
           return iamDao.roleCheck(workspaceId, List.of(WsmIamRole.OWNER), userId);
 
           // workspace owner or writer actions
-        // TODO: Why do we have actions for referenced resources, but no actions
-        //  for controlled resources? Or are those not in the constants file?
+          // TODO: Why do we have actions for referenced resources, but no actions
+          //  for controlled resources? Or are those not in the constants file?
         case SamConstants.SAM_WORKSPACE_WRITE_ACTION:
         case SamConstants.SAM_CREATE_REFERENCED_RESOURCE:
         case SamConstants.SAM_UPDATE_REFERENCED_RESOURCE:
@@ -177,6 +174,4 @@ public class MockSamService {
         .getUserFromEmail(email)
         .orElseThrow(() -> new SamBadRequestException("User not found: " + email));
   }
-
-
 }

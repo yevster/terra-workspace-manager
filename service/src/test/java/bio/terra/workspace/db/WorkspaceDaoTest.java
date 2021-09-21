@@ -12,6 +12,7 @@ import bio.terra.workspace.common.BaseUnitTest;
 import bio.terra.workspace.db.exception.WorkspaceNotFoundException;
 import bio.terra.workspace.service.spendprofile.SpendProfileId;
 import bio.terra.workspace.service.workspace.exceptions.DuplicateWorkspaceException;
+import bio.terra.workspace.service.workspace.model.AzureCloudContext;
 import bio.terra.workspace.service.workspace.model.CloudPlatform;
 import bio.terra.workspace.service.workspace.model.GcpCloudContext;
 import bio.terra.workspace.service.workspace.model.Workspace;
@@ -216,41 +217,57 @@ class WorkspaceDaoTest extends BaseUnitTest {
     @Test
     void createDeleteGcpCloudContext() {
       String projectId = "my-project1";
+      String flightId = "my-flight1";
       GcpCloudContext gcpCloudContext = new GcpCloudContext(projectId);
-      workspaceDao.createGcpCloudContext(workspaceId, gcpCloudContext);
+      workspaceDao.createGcpCloudContext(workspaceId, gcpCloudContext, flightId);
 
-      Workspace workspace = workspaceDao.getWorkspace(workspaceId);
-      assertTrue(workspace.getGcpCloudContext().isPresent());
-      assertEquals(projectId, workspace.getGcpCloudContext().get().getGcpProjectId());
-
-      Optional<GcpCloudContext> dbGcpCloudContext = workspaceDao.getGcpCloudContext(workspaceId);
-      assertTrue(dbGcpCloudContext.isPresent());
-      assertEquals(projectId, dbGcpCloudContext.get().getGcpProjectId());
+      Optional<GcpCloudContext> checkContext = workspaceDao.getGcpCloudContext(workspaceId);
+      assertTrue(checkContext.isPresent());
+      assertEquals(projectId, checkContext.get().getGcpProjectId());
 
       workspaceDao.deleteGcpCloudContext(workspaceId);
-      workspace = workspaceDao.getWorkspace(workspaceId);
-      assertTrue(workspace.getGcpCloudContext().isEmpty());
 
-      dbGcpCloudContext = workspaceDao.getGcpCloudContext(workspaceId);
-      assertTrue(dbGcpCloudContext.isEmpty());
+      assertTrue(workspaceDao.getGcpCloudContext(workspaceId).isEmpty());
+    }
+
+    @Test
+    void createDeleteAzureCloudContext() {
+      String mrg = "test-mrg";
+      var azureCloudContext = new AzureCloudContext("test-tenant", "test-subscription", mrg);
+      String flightId = "my-flight100";
+
+      workspaceDao.createAzureCloudContext(workspaceId, azureCloudContext, flightId);
+
+      Optional<AzureCloudContext> checkContext = workspaceDao.getAzureCloudContext(workspaceId);
+      assertTrue(checkContext.isPresent());
+      assertEquals(mrg, checkContext.get().getAzureResourceGroupId());
+
+      workspaceDao.deleteAzureCloudContext(workspaceId);
+
+      assertTrue(workspaceDao.getAzureCloudContext(workspaceId).isEmpty());
     }
 
     @Test
     void noSetCloudContextIsNone() {
-      Workspace workspace = workspaceDao.getWorkspace(workspaceId);
-      assertTrue(workspace.getGcpCloudContext().isEmpty());
+      assertTrue(workspaceDao.getGcpCloudContext(workspaceId).isEmpty());
     }
 
     @Test
     void deleteWorkspaceWithCloudContext() {
       String projectId = "my-project1";
+      String flightId = "my-flight1";
       GcpCloudContext gcpCloudContext = new GcpCloudContext(projectId);
-      workspaceDao.createGcpCloudContext(workspaceId, gcpCloudContext);
+      workspaceDao.createGcpCloudContext(workspaceId, gcpCloudContext, flightId);
+
+      var azureCloudContext = new AzureCloudContext("test-tenant", "test-subscription", "test-mrg");
+      String flightId100 = "my-flight100";
+      workspaceDao.createAzureCloudContext(workspaceId, azureCloudContext, flightId100);
 
       assertTrue(workspaceDao.deleteWorkspace(workspaceId));
       assertThrows(WorkspaceNotFoundException.class, () -> workspaceDao.getWorkspace(workspaceId));
 
       assertTrue(workspaceDao.getGcpCloudContext(workspaceId).isEmpty());
+      assertTrue(workspaceDao.getAzureCloudContext(workspaceId).isEmpty());
     }
 
     /**
@@ -260,14 +277,36 @@ class WorkspaceDaoTest extends BaseUnitTest {
     @Test
     void gcpCloudContextBackwardsCompatibility() throws Exception {
       final String json = "{\"version\":1,\"gcpProjectId\":\"foo\"}";
-      WorkspaceDao.GcpCloudContextV1 gcpCloudContextV1 =
-          persistenceObjectMapper.readValue(json, WorkspaceDao.GcpCloudContextV1.class);
-      assertEquals(WorkspaceDao.GCP_CLOUD_CONTEXT_DB_VERSION, gcpCloudContextV1.version);
+      GcpCloudContext.GcpCloudContextV1 gcpCloudContextV1 =
+          persistenceObjectMapper.readValue(json, GcpCloudContext.GcpCloudContextV1.class);
+      assertEquals(GcpCloudContext.GCP_CLOUD_CONTEXT_DB_VERSION, gcpCloudContextV1.version);
       assertEquals("foo", gcpCloudContextV1.gcpProjectId);
 
-      GcpCloudContext gcpCloudContext = workspaceDao.deserializeGcpCloudContext(json);
+      GcpCloudContext gcpCloudContext = GcpCloudContext.deserialize(json);
       assertEquals("foo", gcpCloudContext.getGcpProjectId());
     }
+  }
+
+  /**
+   * Hard code serialized values to check that code changes do not break backwards compatibility of
+   * stored JSON values. If this test fails, your change may not work with existing databases.
+   */
+  @Test
+  void azureCloudContextBackwardsCompatibility() throws Exception {
+    final String json =
+        "{\"version\":100,\"azureTenantId\":\"foo\""
+            + ",\"azureSubscriptionId\":\"bar\",\"azureResourceGroupId\":\"fribble\"}";
+    AzureCloudContext.AzureCloudContextV100 azureCloudContextV100 =
+        persistenceObjectMapper.readValue(json, AzureCloudContext.AzureCloudContextV100.class);
+    assertEquals(AzureCloudContext.AZURE_CLOUD_CONTEXT_DB_VERSION, azureCloudContextV100.version);
+    assertEquals("foo", azureCloudContextV100.azureTenantId);
+    assertEquals("bar", azureCloudContextV100.azureSubscriptionId);
+    assertEquals("fribble", azureCloudContextV100.azureResourceGroupId);
+
+    AzureCloudContext azureCloudContext = AzureCloudContext.deserialize(json);
+    assertEquals("foo", azureCloudContext.getAzureTenantId());
+    assertEquals("bar", azureCloudContext.getAzureSubscriptionId());
+    assertEquals("fribble", azureCloudContext.getAzureResourceGroupId());
   }
 
   @Test

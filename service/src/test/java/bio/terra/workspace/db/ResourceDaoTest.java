@@ -35,6 +35,7 @@ public class ResourceDaoTest extends BaseUnitTest {
    * cloud context exists before storing the resource.
    */
   private UUID createGcpWorkspace() {
+    String flightId = UUID.randomUUID().toString();
     Workspace workspace =
         Workspace.builder()
             .workspaceId(UUID.randomUUID())
@@ -42,7 +43,7 @@ public class ResourceDaoTest extends BaseUnitTest {
             .build();
     workspaceDao.createWorkspace(workspace);
     workspaceDao.createGcpCloudContext(
-        workspace.getWorkspaceId(), new GcpCloudContext("my-project-id"));
+        workspace.getWorkspaceId(), new GcpCloudContext("my-project-id"), flightId);
     return workspace.getWorkspaceId();
   }
 

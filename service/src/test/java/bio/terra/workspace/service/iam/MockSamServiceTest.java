@@ -124,10 +124,7 @@ class MockSamServiceTest extends BaseAzureTest {
         UnauthorizedException.class,
         () ->
             samService.grantWorkspaceRole(
-                workspaceId,
-                secondaryUserRequest(),
-                WsmIamRole.READER,
-                secondaryUserEmail()));
+                workspaceId, secondaryUserRequest(), WsmIamRole.READER, secondaryUserEmail()));
   }
 
   @Test
@@ -146,10 +143,7 @@ class MockSamServiceTest extends BaseAzureTest {
         StageDisabledException.class,
         () ->
             samService.grantWorkspaceRole(
-                workspaceId,
-                defaultUserRequest(),
-                WsmIamRole.READER,
-                secondaryUserEmail()));
+                workspaceId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail()));
 
     samService.deleteWorkspace(defaultUserRequest(), workspaceId);
   }
@@ -214,10 +208,7 @@ class MockSamServiceTest extends BaseAzureTest {
         WorkspaceNotFoundException.class,
         () ->
             samService.grantWorkspaceRole(
-                fakeId,
-                defaultUserRequest(),
-                WsmIamRole.READER,
-                secondaryUserEmail()));
+                fakeId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail()));
   }
 
   @Test
@@ -231,91 +222,90 @@ class MockSamServiceTest extends BaseAzureTest {
   @Test
   void listWorkspacesIncludesWsmWorkspace() throws Exception {
     UUID workspaceId = createWorkspaceDefaultUser();
-    List<UUID> samWorkspaceIdList =
-        samService.listWorkspaceIds(defaultUserRequest());
+    List<UUID> samWorkspaceIdList = samService.listWorkspaceIds(defaultUserRequest());
     assertTrue(samWorkspaceIdList.contains(workspaceId));
   }
 
-// TODO: these tests all require
-/*
-  @Test
-  void workspaceReaderIsSharedResourceReader() throws Exception {
-    // Default user is workspace owner, secondary user is workspace reader
-    UUID workspaceId = createWorkspaceDefaultUser();
-    samService.grantWorkspaceRole(
-        workspaceId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail());
+  // TODO: these tests all require
+  /*
+    @Test
+    void workspaceReaderIsSharedResourceReader() throws Exception {
+      // Default user is workspace owner, secondary user is workspace reader
+      UUID workspaceId = createWorkspaceDefaultUser();
+      samService.grantWorkspaceRole(
+          workspaceId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail());
 
-    ControlledResource bucketResource = defaultBucket(workspaceId).build();
-    samService.createControlledResource(bucketResource, null, defaultUserRequest());
+      ControlledResource bucketResource = defaultBucket(workspaceId).build();
+      samService.createControlledResource(bucketResource, null, defaultUserRequest());
 
-    // Workspace reader should have read access on a user-shared resource via inheritance
-    assertTrue(
-        samService.isAuthorized(
-            secondaryUserRequest(),
-            ControlledResourceCategory.USER_SHARED.getSamResourceName(),
-            bucketResource.getResourceId().toString(),
-            SamConstants.SAM_WORKSPACE_READ_ACTION));
+      // Workspace reader should have read access on a user-shared resource via inheritance
+      assertTrue(
+          samService.isAuthorized(
+              secondaryUserRequest(),
+              ControlledResourceCategory.USER_SHARED.getSamResourceName(),
+              bucketResource.getResourceId().toString(),
+              SamConstants.SAM_WORKSPACE_READ_ACTION));
 
-    samService.deleteControlledResource(bucketResource, defaultUserRequest());
-  }
+      samService.deleteControlledResource(bucketResource, defaultUserRequest());
+    }
 
-  @Test
-  void workspaceReaderIsNotPrivateResourceReader() throws Exception {
-    // Default user is workspace owner, secondary user is workspace reader
-    UUID workspaceId = createWorkspaceDefaultUser();
-    samService.grantWorkspaceRole(
-        workspaceId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail());
+    @Test
+    void workspaceReaderIsNotPrivateResourceReader() throws Exception {
+      // Default user is workspace owner, secondary user is workspace reader
+      UUID workspaceId = createWorkspaceDefaultUser();
+      samService.grantWorkspaceRole(
+          workspaceId, defaultUserRequest(), WsmIamRole.READER, secondaryUserEmail());
 
-    // Create private resource assigned to the default user.
-    ControlledResource bucketResource =
-        defaultBucket(workspaceId)
-            .accessScope(AccessScopeType.ACCESS_SCOPE_PRIVATE)
-            .assignedUser(defaultUserEmail())
-            .build();
-    List<ControlledResourceIamRole> privateResourceIamRoles =
-        ImmutableList.of(ControlledResourceIamRole.READER, ControlledResourceIamRole.EDITOR);
-    samService.createControlledResource(
-        bucketResource, privateResourceIamRoles, defaultUserRequest());
+      // Create private resource assigned to the default user.
+      ControlledResource bucketResource =
+          defaultBucket(workspaceId)
+              .accessScope(AccessScopeType.ACCESS_SCOPE_PRIVATE)
+              .assignedUser(defaultUserEmail())
+              .build();
+      List<ControlledResourceIamRole> privateResourceIamRoles =
+          ImmutableList.of(ControlledResourceIamRole.READER, ControlledResourceIamRole.EDITOR);
+      samService.createControlledResource(
+          bucketResource, privateResourceIamRoles, defaultUserRequest());
 
-    // Workspace reader should not have read access on a private resource.
-    assertFalse(
-        samService.isAuthorized(
-            secondaryUserRequest(),
-            ControlledResourceCategory.USER_PRIVATE.getSamResourceName(),
-            bucketResource.getResourceId().toString(),
-            SamConstants.SAM_WORKSPACE_READ_ACTION));
-    // However, the assigned user should have read access.
-    assertTrue(
-        samService.isAuthorized(
-            defaultUserRequest(),
-            ControlledResourceCategory.USER_PRIVATE.getSamResourceName(),
-            bucketResource.getResourceId().toString(),
-            SamConstants.SAM_WORKSPACE_READ_ACTION));
+      // Workspace reader should not have read access on a private resource.
+      assertFalse(
+          samService.isAuthorized(
+              secondaryUserRequest(),
+              ControlledResourceCategory.USER_PRIVATE.getSamResourceName(),
+              bucketResource.getResourceId().toString(),
+              SamConstants.SAM_WORKSPACE_READ_ACTION));
+      // However, the assigned user should have read access.
+      assertTrue(
+          samService.isAuthorized(
+              defaultUserRequest(),
+              ControlledResourceCategory.USER_PRIVATE.getSamResourceName(),
+              bucketResource.getResourceId().toString(),
+              SamConstants.SAM_WORKSPACE_READ_ACTION));
 
-    samService.deleteControlledResource(bucketResource, defaultUserRequest());
-  }
+      samService.deleteControlledResource(bucketResource, defaultUserRequest());
+    }
 
-  @Test
-  void duplicateResourceCreateIgnored() throws Exception {
-    UUID workspaceId = createWorkspaceDefaultUser();
+    @Test
+    void duplicateResourceCreateIgnored() throws Exception {
+      UUID workspaceId = createWorkspaceDefaultUser();
 
-    ControlledResource bucketResource = defaultBucket(workspaceId).build();
-    samService.createControlledResource(bucketResource, null, defaultUserRequest());
-    // This duplicate call should complete without throwing.
-    samService.createControlledResource(bucketResource, null, defaultUserRequest());
-  }
+      ControlledResource bucketResource = defaultBucket(workspaceId).build();
+      samService.createControlledResource(bucketResource, null, defaultUserRequest());
+      // This duplicate call should complete without throwing.
+      samService.createControlledResource(bucketResource, null, defaultUserRequest());
+    }
 
-  @Test
-  void duplicateResourceDeleteIgnored() throws Exception {
-    UUID workspaceId = createWorkspaceDefaultUser();
+    @Test
+    void duplicateResourceDeleteIgnored() throws Exception {
+      UUID workspaceId = createWorkspaceDefaultUser();
 
-    ControlledResource bucketResource = defaultBucket(workspaceId).build();
-    samService.createControlledResource(bucketResource, null, defaultUserRequest());
+      ControlledResource bucketResource = defaultBucket(workspaceId).build();
+      samService.createControlledResource(bucketResource, null, defaultUserRequest());
 
-    samService.deleteControlledResource(bucketResource, defaultUserRequest());
-    samService.deleteControlledResource(bucketResource, defaultUserRequest());
-  }
-*/
+      samService.deleteControlledResource(bucketResource, defaultUserRequest());
+      samService.deleteControlledResource(bucketResource, defaultUserRequest());
+    }
+  */
 
   // Convenience methods for accessing default and secondary users.
   private AuthenticatedUserRequest defaultUserRequest() {

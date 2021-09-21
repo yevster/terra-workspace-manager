@@ -29,6 +29,8 @@ import bio.terra.workspace.service.workspace.flight.WorkspaceCreateFlight;
 import bio.terra.workspace.service.workspace.flight.WorkspaceDeleteFlight;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
+import bio.terra.workspace.service.workspace.flight.create.azure.CreateAzureContextFlight;
+import bio.terra.workspace.service.workspace.model.AzureCloudContext;
 import bio.terra.workspace.service.workspace.model.GcpCloudContext;
 import bio.terra.workspace.service.workspace.model.Workspace;
 import bio.terra.workspace.service.workspace.model.WorkspaceRequest;
@@ -210,6 +212,40 @@ public class WorkspaceService {
   }
 
   /**
+   * Process the request to create a Azure cloud context
+   *
+   * @param workspaceId workspace in which to create the context
+   * @param jobId caller-supplied job id of the async job
+   * @param userRequest user authentication info
+   * @param resultPath optional endpoint where the result of the completed job can be retrieved
+   * @param azureContext azure context information
+   */
+  @Traced
+  public void createAzureCloudContext(
+      UUID workspaceId,
+      String jobId,
+      AuthenticatedUserRequest userRequest,
+      @Nullable String resultPath,
+      AzureCloudContext azureContext) {
+
+    Workspace workspace =
+        validateWorkspaceAndAction(
+            userRequest, workspaceId, SamConstants.SAM_WORKSPACE_WRITE_ACTION);
+    stageService.assertMcWorkspace(workspace, "createCloudContext");
+
+    jobService
+        .newJob(
+            "Create Azure Cloud Context " + workspaceId,
+            jobId,
+            CreateAzureContextFlight.class,
+            azureContext,
+            userRequest)
+        .addParameter(WorkspaceFlightMapKeys.WORKSPACE_ID, workspaceId.toString())
+        .addParameter(JobMapKeys.RESULT_PATH.getKeyName(), resultPath)
+        .submit();
+  }
+
+  /**
    * Process the request to create a GCP cloud context
    *
    * @param workspaceId workspace in which to create the context
@@ -316,6 +352,14 @@ public class WorkspaceService {
         .submitAndWait(null);
   }
 
+  public Optional<GcpCloudContext> getGcpCloudContext(UUID workspaceId) {
+    return workspaceDao.getGcpCloudContext(workspaceId);
+  }
+
+  public Optional<AzureCloudContext> getAzureCloudContext(UUID workspaceId) {
+    return workspaceDao.getAzureCloudContext(workspaceId);
+  }
+
   /**
    * Helper method used by other classes that require the GCP project to exist in the workspace. It
    * throws if the project (GCP cloud context) is not set up.
@@ -324,10 +368,9 @@ public class WorkspaceService {
    * @return GCP project id
    */
   public String getRequiredGcpProject(UUID workspaceId) {
-    Workspace workspace = workspaceDao.getWorkspace(workspaceId);
     GcpCloudContext gcpCloudContext =
-        workspace
-            .getGcpCloudContext()
+        workspaceDao
+            .getGcpCloudContext(workspaceId)
             .orElseThrow(
                 () -> new CloudContextRequiredException("Operation requires GCP cloud context"));
     return gcpCloudContext.getGcpProjectId();
@@ -339,10 +382,7 @@ public class WorkspaceService {
    * given workspace does not have a GCP cloud context.
    */
   public Optional<String> getGcpProject(UUID workspaceId) {
-    return workspaceDao
-        .getWorkspace(workspaceId)
-        .getGcpCloudContext()
-        .map(GcpCloudContext::getGcpProjectId);
+    return workspaceDao.getGcpCloudContext(workspaceId).map(GcpCloudContext::getGcpProjectId);
   }
 
   /**
