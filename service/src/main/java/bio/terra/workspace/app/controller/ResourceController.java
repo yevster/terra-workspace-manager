@@ -12,9 +12,9 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequestFactory;
 import bio.terra.workspace.service.resource.WsmResource;
 import bio.terra.workspace.service.resource.WsmResourceService;
 import bio.terra.workspace.service.resource.WsmResourceType;
+import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
-import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.StewardshipType;
 import bio.terra.workspace.service.resource.referenced.ReferencedBigQueryDatasetResource;
@@ -146,19 +146,20 @@ public class ResourceController implements ResourceApi {
         }
         break; // referenced
 
-      case CONTROLLED:
+      case CONTROLLED: // TODO: Need to decouple cloud-specific types from the generic controller
         ControlledResource controlledResource = wsmResource.castToControlledResource();
         switch (wsmResource.getResourceType()) {
           case AI_NOTEBOOK_INSTANCE:
             {
               ControlledAiNotebookInstanceResource resource =
-                  controlledResource.castToAiNotebookInstanceResource();
+                  ControlledAiNotebookInstanceResource.cast(controlledResource);
               union.gcpAiNotebookInstance(resource.toApiResource(gcpProjectId).getAttributes());
               break;
             }
           case GCS_BUCKET:
             {
-              ControlledGcsBucketResource resource = controlledResource.castToGcsBucketResource();
+              ControlledGcsBucketResource resource =
+                  ControlledGcsBucketResource.cast(controlledResource);
               union.gcpGcsBucket(resource.toApiAttributes());
               break;
             }
@@ -166,7 +167,7 @@ public class ResourceController implements ResourceApi {
           case BIG_QUERY_DATASET:
             {
               ControlledBigQueryDatasetResource resource =
-                  controlledResource.castToBigQueryDatasetResource();
+                  ControlledBigQueryDatasetResource.cast(controlledResource);
               union.gcpBqDataset(resource.toApiAttributes(gcpProjectId));
               break;
             }

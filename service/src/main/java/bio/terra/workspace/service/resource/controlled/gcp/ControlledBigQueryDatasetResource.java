@@ -54,9 +54,9 @@ public class ControlledBigQueryDatasetResource extends ControlledResource {
   }
 
   // Double-checked down casts when we need to re-specialize from a ControlledResource
-  public static ControlledGcsBucketResource cast(ControlledResource resource) {
-    validateSubclass(resource, WsmResourceType.GCS_BUCKET);
-    return (ControlledGcsBucketResource) resource;
+  public static ControlledBigQueryDatasetResource cast(ControlledResource resource) {
+    validateSubclass(resource, WsmResourceType.BIG_QUERY_DATASET);
+    return (ControlledBigQueryDatasetResource) resource;
   }
 
   public static ControlledBigQueryDatasetResource.Builder builder() {

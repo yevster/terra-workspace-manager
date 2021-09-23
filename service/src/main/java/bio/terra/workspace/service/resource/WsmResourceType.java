@@ -2,9 +2,9 @@ package bio.terra.workspace.service.resource;
 
 import bio.terra.common.exception.ValidationException;
 import bio.terra.workspace.generated.model.ApiResourceType;
+import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
-import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedDataRepoSnapshotResource;

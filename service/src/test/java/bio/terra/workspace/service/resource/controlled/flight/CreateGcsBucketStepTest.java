@@ -24,7 +24,7 @@ import bio.terra.workspace.common.BaseUnitTest;
 import bio.terra.workspace.common.fixtures.ControlledResourceFixtures;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketCreationParameters;
 import bio.terra.workspace.service.crl.CrlService;
-import bio.terra.workspace.service.resource.controlled.flight.create.CreateGcsBucketStep;
+import bio.terra.workspace.service.resource.controlled.flight.create.gcp.CreateGcsBucketStep;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
 import com.google.cloud.storage.BucketInfo;

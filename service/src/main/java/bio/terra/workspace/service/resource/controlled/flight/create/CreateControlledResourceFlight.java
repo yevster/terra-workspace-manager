@@ -9,15 +9,19 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.model.ControlledResourceIamRole;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.create.gcp.CreateBigQueryDatasetStep;
+import bio.terra.workspace.service.resource.controlled.flight.create.gcp.CreateGcsBucketStep;
+import bio.terra.workspace.service.resource.controlled.flight.create.gcp.GcsBucketCloudSyncStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.CreateAiNotebookInstanceStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.CreateServiceAccountStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.GenerateServiceAccountIdStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.NotebookCloudSyncStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.RetrieveNetworkNameStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.ServiceAccountPolicyStep;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.workspace.flight.SyncSamGroupsStep;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import java.util.List;
@@ -69,19 +73,19 @@ public class CreateControlledResourceFlight extends Flight {
         addStep(
             new CreateGcsBucketStep(
                 flightBeanBag.getCrlService(),
-                resource.castToGcsBucketResource(),
+                ControlledGcsBucketResource.cast(resource),
                 flightBeanBag.getWorkspaceService()));
         addStep(
             new GcsBucketCloudSyncStep(
                 flightBeanBag.getCrlService(),
-                resource.castToGcsBucketResource(),
+                ControlledGcsBucketResource.cast(resource),
                 flightBeanBag.getWorkspaceService()));
         break;
       case AI_NOTEBOOK_INSTANCE:
         addNotebookSteps(
             userRequest,
             flightBeanBag,
-            resource.castToAiNotebookInstanceResource(),
+            ControlledAiNotebookInstanceResource.cast(resource),
             privateResourceIamRoles);
         break;
       case BIG_QUERY_DATASET:
@@ -90,7 +94,7 @@ public class CreateControlledResourceFlight extends Flight {
         addStep(
             new CreateBigQueryDatasetStep(
                 flightBeanBag.getCrlService(),
-                resource.castToBigQueryDatasetResource(),
+                ControlledBigQueryDatasetResource.cast(resource),
                 flightBeanBag.getWorkspaceService()),
             gcpRetryRule);
         break;

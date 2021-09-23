@@ -4,6 +4,8 @@ import bio.terra.stairway.Flight;
 import bio.terra.stairway.FlightMap;
 import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.common.utils.RetryRules;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
@@ -52,34 +54,26 @@ public class CloneAllResourcesFlight extends Flight {
           case GCS_BUCKET:
             addStep(
                 new LaunchCloneGcsBucketResourceFlightStep(
-                    resourceWithFlightId
-                        .getResource()
-                        .castToControlledResource()
-                        .castToGcsBucketResource(),
+                    ControlledGcsBucketResource.cast(
+                        resourceWithFlightId.getResource().castToControlledResource()),
                     resourceWithFlightId.getFlightId()));
             addStep(
                 new AwaitCloneGcsBucketResourceFlightStep(
-                    resourceWithFlightId
-                        .getResource()
-                        .castToControlledResource()
-                        .castToGcsBucketResource(),
+                    ControlledGcsBucketResource.cast(
+                        resourceWithFlightId.getResource().castToControlledResource()),
                     resourceWithFlightId.getFlightId()),
                 RetryRules.cloudLongRunning());
             break;
           case BIG_QUERY_DATASET:
             addStep(
                 new LaunchCloneControlledGcpBigQueryDatasetResourceFlightStep(
-                    resourceWithFlightId
-                        .getResource()
-                        .castToControlledResource()
-                        .castToBigQueryDatasetResource(),
+                    ControlledBigQueryDatasetResource.cast(
+                        resourceWithFlightId.getResource().castToControlledResource()),
                     resourceWithFlightId.getFlightId()));
             addStep(
                 new AwaitCloneControlledGcpBigQueryDatasetResourceFlightStep(
-                    resourceWithFlightId
-                        .getResource()
-                        .castToControlledResource()
-                        .castToBigQueryDatasetResource(),
+                    ControlledBigQueryDatasetResource.cast(
+                        resourceWithFlightId.getResource().castToControlledResource()),
                     resourceWithFlightId.getFlightId()),
                 RetryRules.cloudLongRunning());
             break;

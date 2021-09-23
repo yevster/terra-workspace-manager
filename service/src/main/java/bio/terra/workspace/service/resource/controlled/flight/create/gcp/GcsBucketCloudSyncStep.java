@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.create;
+package bio.terra.workspace.service.resource.controlled.flight.create.gcp;
 
 import bio.terra.cloudres.google.storage.StorageCow;
 import bio.terra.stairway.FlightContext;

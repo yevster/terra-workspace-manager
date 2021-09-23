@@ -13,6 +13,8 @@ import bio.terra.workspace.service.resource.controlled.exception.ControlledResou
 import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.DeleteAiNotebookInstanceStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.DeleteServiceAccountStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.RetrieveNotebookServiceAccountStep;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
 import java.util.UUID;
 
@@ -71,7 +73,7 @@ public class DeleteControlledResourceFlight extends Flight {
       case BIG_QUERY_DATASET:
         addStep(
             new DeleteBigQueryDatasetStep(
-                resource.castToBigQueryDatasetResource(),
+                ControlledBigQueryDatasetResource.cast(resource),
                 flightBeanBag.getCrlService(),
                 flightBeanBag.getWorkspaceService()),
             gcpRetryRule);
@@ -79,19 +81,19 @@ public class DeleteControlledResourceFlight extends Flight {
       case AI_NOTEBOOK_INSTANCE:
         addStep(
             new RetrieveNotebookServiceAccountStep(
-                resource.castToAiNotebookInstanceResource(),
+                ControlledAiNotebookInstanceResource.cast(resource),
                 flightBeanBag.getCrlService(),
                 flightBeanBag.getWorkspaceService()),
             gcpRetryRule);
         addStep(
             new DeleteAiNotebookInstanceStep(
-                resource.castToAiNotebookInstanceResource(),
+                ControlledAiNotebookInstanceResource.cast(resource),
                 flightBeanBag.getCrlService(),
                 flightBeanBag.getWorkspaceService()),
             gcpRetryRule);
         addStep(
             new DeleteServiceAccountStep(
-                resource.castToAiNotebookInstanceResource(),
+                ControlledAiNotebookInstanceResource.cast(resource),
                 flightBeanBag.getCrlService(),
                 flightBeanBag.getWorkspaceService()),
             gcpRetryRule);

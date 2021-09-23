@@ -180,4 +180,10 @@ public class ControlledGcsBucketResource extends ControlledResource {
           bucketName);
     }
   }
+
+  // Double-checked down casts when we need to re-specialize from a ControlledResource
+  public static ControlledGcsBucketResource cast(ControlledResource resource) {
+    validateSubclass(resource, WsmResourceType.GCS_BUCKET);
+    return (ControlledGcsBucketResource) resource;
+  }
 }
