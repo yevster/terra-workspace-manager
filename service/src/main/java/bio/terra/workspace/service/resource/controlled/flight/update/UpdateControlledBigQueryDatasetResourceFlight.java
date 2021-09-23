@@ -7,6 +7,7 @@ import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.common.utils.RetryRules;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 
 public class UpdateControlledBigQueryDatasetResourceFlight extends Flight {
 
@@ -35,7 +36,7 @@ public class UpdateControlledBigQueryDatasetResourceFlight extends Flight {
     // retrieve existing attributes in case of undo later
     addStep(
         new RetrieveBigQueryDatasetCloudAttributesStep(
-            resource.castToBigQueryDatasetResource(),
+            ControlledBigQueryDatasetResource.cast(resource),
             flightBeanBag.getCrlService(),
             flightBeanBag.getWorkspaceService()),
         gcpRetryRule);
@@ -43,7 +44,7 @@ public class UpdateControlledBigQueryDatasetResourceFlight extends Flight {
     // Update the dataset's cloud attributes
     addStep(
         new UpdateBigQueryDatasetStep(
-            resource.castToBigQueryDatasetResource(),
+            ControlledBigQueryDatasetResource.cast(resource),
             flightBeanBag.getCrlService(),
             flightBeanBag.getWorkspaceService()),
         gcpRetryRule);

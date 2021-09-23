@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.create;
+package bio.terra.workspace.service.resource.controlled.flight.create.gcp;
 
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.CREATION_PARAMETERS;
 

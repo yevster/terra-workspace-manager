@@ -6,9 +6,9 @@ import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.common.utils.RetryRules;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.job.JobMapKeys;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 
 public class CloneControlledGcpBigQueryDatasetResourceFlight extends Flight {
 
@@ -31,7 +31,7 @@ public class CloneControlledGcpBigQueryDatasetResourceFlight extends Flight {
             sourceResource.getWorkspaceId(),
             sourceResource.getResourceId()));
     final ControlledBigQueryDatasetResource sourceDataset =
-        sourceResource.castToBigQueryDatasetResource();
+        ControlledBigQueryDatasetResource.cast(sourceResource);
 
     addStep(
         new RetrieveBigQueryDatasetCloudAttributesStep(

@@ -41,12 +41,12 @@ import bio.terra.workspace.service.job.JobService.AsyncJobResult;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
-import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.controlled.exception.InvalidControlledResourceException;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
@@ -170,7 +170,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
         controlledResourceService.getControlledResource(workspaceId, resourceId, userRequest);
     try {
       ApiGcpGcsBucketResource response =
-          controlledResource.castToGcsBucketResource().toApiResource();
+          ControlledGcsBucketResource.cast(controlledResource).toApiResource();
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (InvalidMetadataException ex) {
       throw new BadRequestException(
@@ -191,7 +191,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
       throw new InvalidControlledResourceException(
           String.format("Resource %s is not a GCS Bucket", resourceId));
     }
-    final ControlledGcsBucketResource bucketResource = resource.castToGcsBucketResource();
+    final ControlledGcsBucketResource bucketResource = ControlledGcsBucketResource.cast(resource);
     controlledGcpResourceService.updateGcsBucket(
         bucketResource,
         body.getUpdateParameters(),
@@ -201,7 +201,10 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
 
     // Retrieve and cast response to ApiGcpGcsBucketResource
     return getControlledResourceAsResponseEntity(
-        workspaceId, resourceId, userRequest, r -> r.castToGcsBucketResource().toApiResource());
+        workspaceId,
+        resourceId,
+        userRequest,
+        r -> ControlledGcsBucketResource.cast(r).toApiResource());
   }
 
   @Override
@@ -258,7 +261,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
         workspaceId,
         resourceId,
         userRequest,
-        r -> r.castToBigQueryDatasetResource().toApiResource(projectId));
+        r -> ControlledBigQueryDatasetResource.cast(r).toApiResource(projectId));
   }
 
   @Override
@@ -273,7 +276,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
           String.format("Resource %s is not a BigQuery Dataset", resourceId));
     }
     final ControlledBigQueryDatasetResource datasetResource =
-        resource.castToBigQueryDatasetResource();
+        ControlledBigQueryDatasetResource.cast(resource);
     controlledGcpResourceService.updateBqDataset(
         datasetResource,
         body.getUpdateParameters(),
@@ -287,7 +290,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
         workspaceId,
         resourceId,
         userRequest,
-        r -> r.castToBigQueryDatasetResource().toApiResource(projectId));
+        r -> ControlledBigQueryDatasetResource.cast(r).toApiResource(projectId));
   }
 
   /**
@@ -343,9 +346,10 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
     List<ControlledResourceIamRole> privateRoles = privateRolesFromBody(body.getCommon());
 
     final ControlledBigQueryDatasetResource createdDataset =
-        controlledGcpResourceService
-            .createBigQueryDataset(resource, body.getDataset(), privateRoles, userRequest)
-            .castToBigQueryDatasetResource();
+        ControlledBigQueryDatasetResource.cast(
+            controlledGcpResourceService.createBigQueryDataset(
+                resource, body.getDataset(), privateRoles, userRequest));
+
     var response =
         new ApiCreatedControlledGcpBigQueryDataset()
             .resourceId(createdDataset.getResourceId())
@@ -483,8 +487,7 @@ public class ControlledGcpResourceApiController implements ControlledGcpResource
         controlledResourceService.getControlledResource(workspaceId, resourceId, userRequest);
     try {
       ApiGcpAiNotebookInstanceResource response =
-          controlledResource
-              .castToAiNotebookInstanceResource()
+          ControlledAiNotebookInstanceResource.cast(controlledResource)
               .toApiResource(workspaceService.getRequiredGcpProject(workspaceId));
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (InvalidMetadataException ex) {

@@ -59,7 +59,7 @@ public class DeleteGcsBucketStep implements Step {
     String projectId = workspaceService.getRequiredGcpProject(workspaceId);
     WsmResource wsmResource = resourceDao.getResource(workspaceId, resourceId);
     ControlledGcsBucketResource resource =
-        wsmResource.castToControlledResource().castToGcsBucketResource();
+        ControlledGcsBucketResource.cast(wsmResource.castToControlledResource());
     final StorageCow storageCow = crlService.createStorageCow(projectId);
     BucketCow bucket = storageCow.get(resource.getBucketName());
 

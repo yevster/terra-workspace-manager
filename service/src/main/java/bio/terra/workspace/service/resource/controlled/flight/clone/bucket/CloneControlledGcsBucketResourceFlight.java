@@ -37,7 +37,8 @@ public class CloneControlledGcsBucketResourceFlight extends Flight {
             flightBeanBag.getResourceDao(),
             sourceResource.getWorkspaceId(),
             sourceResource.getResourceId()));
-    final ControlledGcsBucketResource sourceBucket = sourceResource.castToGcsBucketResource();
+    final ControlledGcsBucketResource sourceBucket =
+        ControlledGcsBucketResource.cast(sourceResource);
     addStep(
         new RetrieveGcsBucketCloudAttributesStep(
             sourceBucket,

@@ -16,7 +16,6 @@ import bio.terra.workspace.service.iam.model.WsmIamRole;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
 import bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
-import bio.terra.workspace.service.resource.controlled.flight.create.GcpPolicyBuilder;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;

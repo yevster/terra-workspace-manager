@@ -6,6 +6,7 @@ import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 
 public class UpdateControlledGcsBucketResourceFlight extends Flight {
 
@@ -32,7 +33,7 @@ public class UpdateControlledGcsBucketResourceFlight extends Flight {
     // retrieve existing attributes in case of undo later
     addStep(
         new RetrieveGcsBucketCloudAttributesStep(
-            resource.castToGcsBucketResource(),
+            ControlledGcsBucketResource.cast(resource),
             flightBeanBag.getCrlService(),
             flightBeanBag.getWorkspaceService(),
             RetrievalMode.UPDATE_PARAMETERS));
@@ -40,7 +41,7 @@ public class UpdateControlledGcsBucketResourceFlight extends Flight {
     // Update the bucket's cloud attributes
     addStep(
         new UpdateGcsBucketStep(
-            resource.castToGcsBucketResource(),
+            ControlledGcsBucketResource.cast(resource),
             flightBeanBag.getCrlService(),
             flightBeanBag.getWorkspaceService()));
   }
