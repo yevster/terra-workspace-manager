@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.referenced;
+package bio.terra.workspace.service.resource.referenced.gcp;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

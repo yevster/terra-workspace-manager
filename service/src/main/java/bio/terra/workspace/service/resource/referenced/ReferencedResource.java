@@ -8,6 +8,10 @@ import bio.terra.workspace.service.resource.WsmResource;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.resource.model.StewardshipType;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
+
 import java.util.UUID;
 
 public abstract class ReferencedResource extends WsmResource {
@@ -58,10 +62,5 @@ public abstract class ReferencedResource extends WsmResource {
    */
   public abstract boolean checkAccess(FlightBeanBag context, AuthenticatedUserRequest userRequest);
 
-  private void validateSubclass(WsmResourceType expectedType) {
-    if (getResourceType() != expectedType) {
-      throw new InvalidMetadataException(
-          String.format("Expected %s, found %s", expectedType, getResourceType()));
-    }
-  }
+
 }
