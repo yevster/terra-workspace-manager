@@ -23,9 +23,9 @@ import bio.terra.workspace.service.resource.exception.DuplicateResourceException
 import bio.terra.workspace.service.resource.exception.ResourceNotFoundException;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.resource.model.StewardshipType;
-import bio.terra.workspace.service.resource.referenced.ReferencedBigQueryDatasetResource;
-import bio.terra.workspace.service.resource.referenced.ReferencedDataRepoSnapshotResource;
-import bio.terra.workspace.service.resource.referenced.ReferencedGcsBucketResource;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedResource;
 import bio.terra.workspace.service.workspace.model.CloudPlatform;
 import java.util.Collections;

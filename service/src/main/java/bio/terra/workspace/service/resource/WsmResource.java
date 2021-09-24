@@ -172,4 +172,11 @@ public abstract class WsmResource {
     result = 31 * result + (cloningInstructions != null ? cloningInstructions.hashCode() : 0);
     return result;
   }
+
+  protected void validateSubclass(WsmResourceType expectedType) {
+    if (getResourceType() != expectedType) {
+      throw new InvalidMetadataException(
+              String.format("Expected %s, found %s", expectedType, getResourceType()));
+    }
+  }
 }
