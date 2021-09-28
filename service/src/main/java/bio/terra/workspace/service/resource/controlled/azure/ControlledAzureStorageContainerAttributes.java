@@ -7,7 +7,8 @@ public class ControlledAzureStorageContainerAttributes {
   private final String containerName;
 
   @JsonCreator
-  public ControlledAzureStorageContainerAttributes(@JsonProperty("container") String containerName) {
+  public ControlledAzureStorageContainerAttributes(
+      @JsonProperty("container") String containerName) {
     this.containerName = containerName;
   }
 

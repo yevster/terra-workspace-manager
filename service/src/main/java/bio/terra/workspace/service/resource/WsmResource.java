@@ -176,7 +176,7 @@ public abstract class WsmResource {
   protected void validateSubclass(WsmResourceType expectedType) {
     if (getResourceType() != expectedType) {
       throw new InvalidMetadataException(
-              String.format("Expected %s, found %s", expectedType, getResourceType()));
+          String.format("Expected %s, found %s", expectedType, getResourceType()));
     }
   }
 }

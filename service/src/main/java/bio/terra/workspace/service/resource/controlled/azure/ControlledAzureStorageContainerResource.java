@@ -14,7 +14,6 @@ import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.UUID;
 
 public class ControlledAzureStorageContainerResource extends ControlledResource {
@@ -48,7 +47,8 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
   public ControlledAzureStorageContainerResource(DbResource dbResource) {
     super(dbResource);
     ControlledAzureStorageContainerAttributes attributes =
-        DbSerDes.fromJson(dbResource.getAttributes(), ControlledAzureStorageContainerAttributes.class);
+        DbSerDes.fromJson(
+            dbResource.getAttributes(), ControlledAzureStorageContainerAttributes.class);
     this.containerName = attributes.getContainerName();
     validate();
   }
@@ -142,8 +142,7 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
       return this;
     }
 
-    public Builder cloningInstructions(
-        CloningInstructions cloningInstructions) {
+    public Builder cloningInstructions(CloningInstructions cloningInstructions) {
       this.cloningInstructions = cloningInstructions;
       return this;
     }

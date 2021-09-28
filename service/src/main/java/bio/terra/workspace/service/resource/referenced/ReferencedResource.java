@@ -11,7 +11,6 @@ import bio.terra.workspace.service.resource.model.StewardshipType;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
-
 import java.util.UUID;
 
 public abstract class ReferencedResource extends WsmResource {
@@ -61,6 +60,4 @@ public abstract class ReferencedResource extends WsmResource {
    * @param userRequest Credentials of the user to impersonate for validation
    */
   public abstract boolean checkAccess(FlightBeanBag context, AuthenticatedUserRequest userRequest);
-
-
 }

@@ -17,11 +17,11 @@ import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookI
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.StewardshipType;
+import bio.terra.workspace.service.resource.referenced.ReferencedResource;
+import bio.terra.workspace.service.resource.referenced.ReferencedResourceService;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
-import bio.terra.workspace.service.resource.referenced.ReferencedResource;
-import bio.terra.workspace.service.resource.referenced.ReferencedResourceService;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.exceptions.InternalLogicException;
 import com.google.common.annotations.VisibleForTesting;

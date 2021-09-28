@@ -27,9 +27,9 @@ import bio.terra.workspace.service.resource.controlled.ControlledResourceCategor
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
-import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedResourceService;
+import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.exceptions.StageDisabledException;
 import bio.terra.workspace.service.workspace.model.Workspace;
