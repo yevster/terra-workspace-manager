@@ -5,19 +5,16 @@ import bio.terra.common.exception.MissingRequiredFieldException;
 import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.db.DbSerDes;
 import bio.terra.workspace.db.model.DbResource;
-import bio.terra.workspace.generated.model.ApiGcpGcsBucketAttributes;
-import bio.terra.workspace.generated.model.ApiGcpGcsBucketResource;
 import bio.terra.workspace.service.crl.CrlService;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.resource.referenced.ReferencedResource;
-import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketAttributes;
-import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,10 +60,9 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
 
   public String getContainerName() {
     return containerName;
-
-    AzureResourceManager
   }
 
+/*
   public ApiAzureStorageContainerAttributes toApiAttributes() {
     return new ApiAzureStorageContainerAttributes().containerName(getContainerName());
   }
@@ -76,6 +72,7 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
         .metadata(super.toApiMetadata())
         .attributes(toApiAttributes());
   }
+*/
 
   @Override
   public WsmResourceType getResourceType() {
@@ -84,7 +81,7 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
 
   @Override
   public String attributesToJson() {
-    return DbSerDes.toJson(new ReferencedGcsBucketAttributes(bucketName));
+    return DbSerDes.toJson(new ReferencedAzureStorageContainerAttributes(containerName));
   }
 
   @Override
@@ -93,16 +90,16 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
     if (getResourceType() != WsmResourceType.GCS_BUCKET) {
       throw new InconsistentFieldsException("Expected GCS_BUCKET");
     }
-    if (Strings.isNullOrEmpty(getBucketName())) {
+    if (Strings.isNullOrEmpty(getContainerName())) {
       throw new MissingRequiredFieldException("Missing required field for ReferenceGcsBucket.");
     }
-    ValidationUtils.validateBucketName(getBucketName());
+    ValidationUtils.validateBucketName(getContainerName());
   }
 
   @Override
   public boolean checkAccess(FlightBeanBag context, AuthenticatedUserRequest userRequest) {
     CrlService crlService = context.getCrlService();
-    return crlService.canReadGcsBucket(bucketName, userRequest);
+    return crlService.canReadGcsBucket(containerName, userRequest);
   }
 
   /**
@@ -111,9 +108,9 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
    *
    * @return builder object ready for new values to replace existing ones
    */
-  public ReferencedGcsBucketResource.Builder toBuilder() {
+  public ReferencedAzureStorageContainerResource.Builder toBuilder() {
     return builder()
-        .bucketName(getBucketName())
+        .containerName(getContainerName())
         .cloningInstructions(getCloningInstructions())
         .description(getDescription())
         .name(getName())
@@ -121,58 +118,58 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
         .workspaceId(getWorkspaceId());
   }
 
-  public static ReferencedGcsBucketResource.Builder builder() {
-    return new ReferencedGcsBucketResource.Builder();
+  public static ReferencedAzureStorageContainerResource.Builder builder() {
+    return new ReferencedAzureStorageContainerResource.Builder();
   }
 
   public static class Builder {
     private CloningInstructions cloningInstructions;
-    private String bucketName;
+    private String containerName;
     private String description;
     private String name;
     private UUID resourceId;
     private UUID workspaceId;
 
-    public ReferencedGcsBucketResource.Builder workspaceId(UUID workspaceId) {
+    public ReferencedAzureStorageContainerResource.Builder workspaceId(UUID workspaceId) {
       this.workspaceId = workspaceId;
       return this;
     }
 
-    public ReferencedGcsBucketResource.Builder resourceId(UUID resourceId) {
+    public ReferencedAzureStorageContainerResource.Builder resourceId(UUID resourceId) {
       this.resourceId = resourceId;
       return this;
     }
 
-    public ReferencedGcsBucketResource.Builder name(String name) {
+    public ReferencedAzureStorageContainerResource.Builder name(String name) {
       this.name = name;
       return this;
     }
 
-    public ReferencedGcsBucketResource.Builder description(String description) {
+    public ReferencedAzureStorageContainerResource.Builder description(String description) {
       this.description = description;
       return this;
     }
 
-    public ReferencedGcsBucketResource.Builder cloningInstructions(
+    public ReferencedAzureStorageContainerResource.Builder cloningInstructions(
         CloningInstructions cloningInstructions) {
       this.cloningInstructions = cloningInstructions;
       return this;
     }
 
-    public ReferencedGcsBucketResource.Builder bucketName(String bucketName) {
-      this.bucketName = bucketName;
+    public ReferencedAzureStorageContainerResource.Builder containerName(String containerName) {
+      this.containerName = containerName;
       return this;
     }
 
-    public ReferencedGcsBucketResource build() {
+    public ReferencedAzureStorageContainerResource build() {
       // On the create path, we can omit the resourceId and have it filled in by the builder.
-      return new ReferencedGcsBucketResource(
+      return new ReferencedAzureStorageContainerResource(
           workspaceId,
           Optional.ofNullable(resourceId).orElse(UUID.randomUUID()),
           name,
           description,
           cloningInstructions,
-          bucketName);
+          containerName);
     }
   }
 }
