@@ -41,7 +41,6 @@ public enum WsmResourceType {
       ReferencedBigQueryDatasetResource.class,
       ControlledBigQueryDatasetResource.class);
 
-
   private final CloudPlatform cloudPlatform;
   private final String dbString; // serialized form of the resource type
   private final ApiResourceType apiResourceType;
