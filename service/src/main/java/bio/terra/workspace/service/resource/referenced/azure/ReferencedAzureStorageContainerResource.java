@@ -14,7 +14,6 @@ import bio.terra.workspace.service.resource.referenced.ReferencedResource;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,17 +61,17 @@ public class ReferencedAzureStorageContainerResource extends ReferencedResource 
     return containerName;
   }
 
-/*
-  public ApiAzureStorageContainerAttributes toApiAttributes() {
-    return new ApiAzureStorageContainerAttributes().containerName(getContainerName());
-  }
+  /*
+    public ApiAzureStorageContainerAttributes toApiAttributes() {
+      return new ApiAzureStorageContainerAttributes().containerName(getContainerName());
+    }
 
-  public ApiGcpGcsBucketResource toApiModel() {
-    return new ApiGcpGcsBucketResource()
-        .metadata(super.toApiMetadata())
-        .attributes(toApiAttributes());
-  }
-*/
+    public ApiGcpGcsBucketResource toApiModel() {
+      return new ApiGcpGcsBucketResource()
+          .metadata(super.toApiMetadata())
+          .attributes(toApiAttributes());
+    }
+  */
 
   @Override
   public WsmResourceType getResourceType() {

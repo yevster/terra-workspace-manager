@@ -26,6 +26,7 @@ import bio.terra.workspace.service.resource.controlled.AccessScopeType;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import bio.terra.workspace.service.spendprofile.SpendConnectedTestUtils;
 import bio.terra.workspace.service.workspace.WorkspaceService;
@@ -46,6 +47,7 @@ public class RemoveUserFromWorkspaceFlightTest extends BaseConnectedTest {
 
   @Autowired private WorkspaceService workspaceService;
   @Autowired private ControlledResourceService controlledResourceService;
+  @Autowired private ControlledGcpResourceService controlledGcpResourceService;
   @Autowired private JobService jobService;
   @Autowired private SamService samService;
   @Autowired private SpendConnectedTestUtils spendUtils;
@@ -179,7 +181,7 @@ public class RemoveUserFromWorkspaceFlightTest extends BaseConnectedTest {
             .location("us-central1");
     List<ControlledResourceIamRole> privateRoles =
         ImmutableList.of(ControlledResourceIamRole.WRITER, ControlledResourceIamRole.EDITOR);
-    return controlledResourceService.createBigQueryDataset(
+    return controlledGcpResourceService.createBigQueryDataset(
         datasetToCreate,
         datasetCreationParameters,
         privateRoles,

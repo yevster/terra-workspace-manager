@@ -20,6 +20,7 @@ import bio.terra.workspace.service.job.JobService;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ControlledResourceService;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
+import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcpResourceService;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.model.Workspace;
 import java.time.Duration;
@@ -39,6 +40,7 @@ public class WorkspaceDeleteFlightTest extends BaseConnectedTest {
 
   @Autowired UserAccessUtils userAccessUtils;
   @Autowired WorkspaceConnectedTestUtils connectedTestUtils;
+  @Autowired ControlledGcpResourceService controlledGcpResourceService;
   @Autowired ControlledResourceService controlledResourceService;
   @Autowired JobService jobService;
   @Autowired WorkspaceService workspaceService;
@@ -56,13 +58,13 @@ public class WorkspaceDeleteFlightTest extends BaseConnectedTest {
     var creationParameters =
         ControlledResourceFixtures.defaultBigQueryDatasetCreationParameters()
             .datasetId(dataset.getDatasetName());
-    controlledResourceService.createBigQueryDataset(
+    controlledGcpResourceService.createBigQueryDataset(
         dataset, creationParameters, Collections.emptyList(), userRequest);
 
     ControlledResource gotResource =
         controlledResourceService.getControlledResource(
             workspace.getWorkspaceId(), dataset.getResourceId(), userRequest);
-    assertEquals(dataset, gotResource.castToBigQueryDatasetResource());
+    assertEquals(dataset, ControlledBigQueryDatasetResource.cast(gotResource));
 
     // Run the delete flight, retrying every step once
     FlightMap deleteParameters = new FlightMap();
@@ -113,13 +115,13 @@ public class WorkspaceDeleteFlightTest extends BaseConnectedTest {
     var creationParameters =
         ControlledResourceFixtures.defaultBigQueryDatasetCreationParameters()
             .datasetId(dataset.getDatasetName());
-    controlledResourceService.createBigQueryDataset(
+    controlledGcpResourceService.createBigQueryDataset(
         dataset, creationParameters, Collections.emptyList(), userRequest);
 
     ControlledResource gotResource =
         controlledResourceService.getControlledResource(
             workspace.getWorkspaceId(), dataset.getResourceId(), userRequest);
-    assertEquals(dataset, gotResource.castToBigQueryDatasetResource());
+    assertEquals(dataset, ControlledBigQueryDatasetResource.cast(gotResource));
 
     FlightMap deleteParameters = new FlightMap();
     deleteParameters.put(

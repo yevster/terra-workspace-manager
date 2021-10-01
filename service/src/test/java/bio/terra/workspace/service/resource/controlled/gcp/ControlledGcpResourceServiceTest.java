@@ -487,12 +487,12 @@ public class ControlledGcpResourceServiceTest extends BaseConnectedTest {
     assertEquals(resource, createdDataset);
 
     ControlledBigQueryDatasetResource fetchedDataset =
-        controlledResourceService
-            .getControlledResource(
+        ControlledBigQueryDatasetResource.cast(
+            controlledResourceService.getControlledResource(
                 workspace.getWorkspaceId(),
                 resource.getResourceId(),
-                user.getAuthenticatedRequest())
-            .castToBigQueryDatasetResource();
+                user.getAuthenticatedRequest()));
+
     assertEquals(resource, fetchedDataset);
 
     String newName = "NEW_createGetUpdateDeleteBqDataset";
@@ -507,12 +507,11 @@ public class ControlledGcpResourceServiceTest extends BaseConnectedTest {
         fetchedDataset, updateParameters, user.getAuthenticatedRequest(), newName, newDescription);
 
     ControlledBigQueryDatasetResource updatedResource =
-        controlledResourceService
-            .getControlledResource(
+        ControlledBigQueryDatasetResource.cast(
+            controlledResourceService.getControlledResource(
                 workspace.getWorkspaceId(),
                 resource.getResourceId(),
-                user.getAuthenticatedRequest())
-            .castToBigQueryDatasetResource();
+                user.getAuthenticatedRequest()));
     assertEquals(newName, updatedResource.getName());
     assertEquals(newDescription, updatedResource.getDescription());
 
@@ -810,12 +809,11 @@ public class ControlledGcpResourceServiceTest extends BaseConnectedTest {
 
     // check the properties stored in WSM were updated
     ControlledBigQueryDatasetResource fetchedResource =
-        controlledResourceService
-            .getControlledResource(
+        ControlledBigQueryDatasetResource.cast(
+            controlledResourceService.getControlledResource(
                 workspace.getWorkspaceId(),
                 resource.getResourceId(),
-                user.getAuthenticatedRequest())
-            .castToBigQueryDatasetResource();
+                user.getAuthenticatedRequest()));
     assertEquals(newName, fetchedResource.getName());
     assertEquals(newDescription, fetchedResource.getDescription());
   }
@@ -891,12 +889,11 @@ public class ControlledGcpResourceServiceTest extends BaseConnectedTest {
 
     // check the properties stored in WSM were not updated
     ControlledBigQueryDatasetResource fetchedResource =
-        controlledResourceService
-            .getControlledResource(
+        ControlledBigQueryDatasetResource.cast(
+            controlledResourceService.getControlledResource(
                 workspace.getWorkspaceId(),
                 resource.getResourceId(),
-                user.getAuthenticatedRequest())
-            .castToBigQueryDatasetResource();
+                user.getAuthenticatedRequest()));
     assertEquals(resource.getName(), fetchedResource.getName());
     assertEquals(resource.getDescription(), fetchedResource.getDescription());
   }
