@@ -1272,6 +1272,125 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  #Azure paths
+  /api/workspaces/v1/{workspaceId}/resources/referenced/azure/storageContainers:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+    post:
+      summary: Create a new Azure Storage container reference in a workspace.
+      operationId: createBucketReference
+      tags: [ReferencedAzureResource]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAzureStorageContainerReferenceRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/AzureStorageContainerReferenceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/workspaces/v1/{workspaceId}/resources/referenced/azure/storageContainers/{resourceId}:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+      - $ref: '#/components/parameters/ResourceId'
+    get:
+      summary: Gets a reference to a bucket from a workspace.
+      operationId: getBucketReference
+      tags: [ReferencedAzureResource]
+      responses:
+        '200':
+          $ref: '#/components/responses/AzureStorageContainerReferenceResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update name or description of a bucket reference in a workspace.
+      operationId: updateBucketReference
+      tags: [ReferencedAzureResource]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDataReferenceRequestBody'
+      responses:
+        '204':
+          description: OK
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete Azure Storage container reference
+      operationId: deleteBucketReference
+      tags: [ReferencedAzureResource]
+      responses:
+        '204':
+          description: OK
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/workspaces/v1/{workspaceId}/resources/referenced/azure/storageContainers/{resourceId}/clone:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+      - $ref: '#/components/parameters/ResourceId'
+    post:
+      summary: Clone a referenced Azure Storage container resource
+      operationId: cloneAzureStorageContainerReference
+      tags: [ReferencedAzureResource]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneReferencedResourceRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/CloneReferencedAzureStorageContainerResourceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/workspaces/v1/{workspaceId}/resources/referenced/azure/storageContainers/name/{name}:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+      - $ref: '#/components/parameters/Name'
+    get:
+      summary: Gets a reference to a Azure Storage container by name.
+      operationId: getBucketReferenceByName
+      tags: [ReferencedAzureResource]
+      responses:
+        '200':
+          $ref: '#/components/responses/AzureStorageContainerReferenceResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+
 components:
   parameters:
     ## DEPRECATED PARAMETERS ##
@@ -1407,6 +1526,297 @@ components:
           description: Description for the referenced resource clone, or null to use original.
           type: string
 
+    ### AZURE SCHEMAS ###
+    CreateAzureStorageContainerReferenceRequestBody:
+      type: object
+      description: A request to create a reference to a Azure Storage container.
+      required: [ metadata, bucket ]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ReferenceResourceCommonFields'
+        bucket:
+          $ref: '#/components/schemas/AzureStorageContainerAttributes'
+
+    CreateControlledAzureStorageContainerRequestBody:
+      description: Payload for requesting a new controlled Azure Storage container resource.
+      type: object
+      properties:
+        common:
+          $ref: '#/components/schemas/ControlledResourceCommonFields'
+        gcsBucket:
+          $ref: '#/components/schemas/AzureStorageContainerCreationParameters'
+
+    UpdateControlledAzureStorageContainerRequestBody:
+      type: object
+      description: Update a Azure Storage container's metadata and lifecycle rules.
+      properties:
+        name:
+          description: Optional. New name to give to this resource. The resource name will not be updated if this is omitted.
+          type: string
+        description:
+          description: Optional. New description to give to this resource. The resource description will not be updated if this is omitted.
+          type: string
+        updateParameters:
+          $ref: '#/components/schemas/AzureStorageContainerUpdateParameters'
+
+    CreatedControlledAzureStorageContainer:
+      description: Response Payload for requesting a new controlled Azure Storage container.
+      type: object
+      properties:
+        resourceId:
+          description: UUID of a newly-created resource. Null if not created yet.
+          type: string
+          format: uuid
+        azureStorageContainer:
+          $ref: '#/components/schemas/AzureStorageContainerResource'
+
+    AzureStorageContainerCreationParameters:
+      description: >-
+        Bucket-specific properties to be set on creation. These are a subset of the
+        values accepted by the Gcp Storage API.
+      type: object
+      required: [ name, location ]
+      properties:
+        name:
+          description: A valid bucket name per https://cloud.google.com/storage/docs/naming-buckets.
+          type: string
+        location:
+          description: A valid bucket location per https://cloud.google.com/storage/docs/locations.
+          type: string
+        defaultStorageClass:
+          $ref: '#/components/schemas/AzureStorageContainerDefaultStorageClass'
+        lifecycle:
+          $ref: '#/components/schemas/AzureStorageContainerLifecycle'
+
+    AzureStorageContainerUpdateParameters:
+      description: >-
+        Parameters that may be changed by a user. Location and Bucket name are fixed upon create.
+      properties:
+        defaultStorageClass:
+          $ref: '#/components/schemas/AzureStorageContainerDefaultStorageClass'
+        lifecycle:
+          $ref: '#/components/schemas/AzureStorageContainerLifecycle'
+
+    AzureStorageContainerDefaultStorageClass:
+      description: >-
+        Type and availability of objects in a bucket, described at https://cloud.google.com/storage/docs/storage-classes.
+        This list does not include legacy types that apply to some existing buckets.
+      type: string
+      enum:
+        - STANDARD
+        - NEARLINE
+        - COLDLINE
+        - ARCHIVE
+    AzureStorageContainerLifecycle:
+      description: >-
+        Options to control automatic deletion or storage class change for a bucket.
+        Described at https://cloud.google.com/storage/docs/lifecycle.
+      type: object
+      properties:
+        rules:
+          description: List of rules for this bucket
+          type: array
+          items:
+            $ref: '#/components/schemas/AzureStorageContainerLifecycleRule'
+
+    AzureStorageContainerLifecycleRule:
+      description: A lifecycle rule for a bucket.
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/AzureStorageContainerLifecycleRuleAction'
+        condition:
+          $ref: '#/components/schemas/AzureStorageContainerLifecycleRuleCondition'
+
+    AzureStorageContainerLifecycleRuleAction:
+      description: The lifecycle action to take. See https://cloud.google.com/storage/docs/lifecycle#actions.
+      type: object
+      properties:
+        storageClass:
+          $ref: '#/components/schemas/AzureStorageContainerDefaultStorageClass'
+        type:
+          $ref: '#/components/schemas/AzureStorageContainerLifecycleRuleActionType'
+
+    AzureStorageContainerLifecycleRuleActionType:
+      description: >-
+        Type of action to perform. Formatted like our Java enums, but spelled in Camel case in Gcp API.
+      type: string
+      enum:
+        - DELETE
+        - SET_STORAGE_CLASS
+
+    AzureStorageContainerLifecycleRuleCondition:
+      description: The condition(s) under which the action will be taken.
+      type: object
+      properties:
+        age:
+          description: Age of an object (in days). This condition is satisfied when an object reaches the specified age.
+          type: integer
+        createdBefore:
+          description: This condition is satisfied when an object is created before midnight of the specified date in UTC.
+          type: string
+          format: date-time
+        customTimeBefore:
+          description: >-
+            This condition is satisfied when the customTime metadata for the object is set to an
+            earlier date than the date used in this lifecycle condition.
+          type: string
+          format: date-time
+        daysSinceCustomTime:
+          description: >-
+            Days since the date set in the customTime metadata for the object. This condition is
+            satisfied when the current date and time is at least the specified number of days after
+            the customTime.
+          type: integer
+        daysSinceNoncurrentTime:
+          description: >-
+            Relevant only for versioned objects. This condition is satisfied when an object has
+            been noncurrent for more than the specified number of days.
+          type: integer
+        live:
+          description: >-
+            Relevant only for versioned objects. If the value is true, this condition matches the
+            live version of objects; if the value is false, it matches noncurrent versions of objects.
+          type: boolean
+        matchesStorageClass:
+          description: >-
+            Objects having any of the storage classes specified by this condition will be matched.
+            Values include "STANDARD", "NEARLINE", "COLDLINE", "ARCHIVE", "MULTI_REGIONAL",
+            "REGIONAL", and "DURABLE_REDUCED_AVAILABILITY".
+          type: array
+          items:
+            $ref: '#/components/schemas/AzureStorageContainerDefaultStorageClass'
+        noncurrentTimeBefore:
+          description: >-
+            Relevant only for versioned objects. This condition is satisfied for objects that became
+            noncurrent on a date prior to the one specified in this condition.
+          type: string
+          format: date-time
+        numNewerVersions:
+          description: >-
+            Relevant only for versioned objects. If the value is N, this condition is satisfied
+            when there are at least N versions (including the live version) newer than this version
+            of the object.
+          type: integer
+
+    DeleteControlledAzureStorageContainerRequest:
+      type: object
+      required: [ jobControl ]
+      properties:
+        jobControl:
+          $ref: '#/components/schemas/JobControl'
+
+    DeleteControlledAzureStorageContainerResult:
+      type: object
+      properties:
+        jobReport:
+          $ref: '#/components/schemas/JobReport'
+        errorReport:
+          $ref: '#/components/schemas/ErrorReport'
+
+    AzureStorageContainerAttributes:
+      description: >-
+        Bucket properties included in post-creation, get, and update. Others must be
+        retrieved from GCS using the name.
+      type: object
+      properties:
+        bucketName:
+          description: Name of created bucket (not the resource name).
+          type: string
+
+    AzureStorageContainerResource:
+      type: object
+      description: Description of a Azure Storage container.
+      required: [ metadata, attributes ]
+      properties:
+        metadata:
+          description: the resource metadata common to all resources
+          $ref: '#/components/schemas/ResourceMetadata'
+        attributes:
+          $ref: '#/components/schemas/AzureStorageContainerAttributes'
+
+    CloneControlledAzureStorageContainerRequest:
+      description: >-
+        Values to assign to the cloned bucket for a given source bucket. Leave
+        name and description null to take the source object's values.
+      type: object
+      required: [ destinationWorkspaceId, jobControl ]
+      properties:
+        destinationWorkspaceId:
+          description: ID of workspace to be cloned into
+          type: string
+          format: uuid
+        cloningInstructions:
+          $ref: "#/components/schemas/CloningInstructionsEnum"
+        name:
+          $ref: "#/components/schemas/Name"
+        description:
+          type: string
+        bucketName:
+          description: >-
+            Name of created bucket (not the resource name). This name must
+            be globally unique, so it can't be a copy of the original bucket name.
+            It also can't be a simple formula like copy-of-bucket-name, as that would
+            fail on subsequent clone operations with bucket-name as the source bucket.
+            If null, a random bucket name will be created.
+          type: string
+        location:
+          description: >-
+            A valid bucket location per https://cloud.google.com/storage/docs/locations.
+            If null, will use source bucket's location.
+          type: string
+        jobControl:
+          $ref: '#/components/schemas/JobControl'
+    ClonedControlledAzureStorageContainer:
+      description: >-
+        Response object for clone of a Azure Storage container. Destination workspace and
+        resource IDs are available in the bucket's metadata object. TODO: generalize so there's a
+        single response type for all resource clones?
+      type: object
+      properties:
+        effectiveCloningInstructions:
+          $ref: '#/components/schemas/CloningInstructionsEnum'
+        sourceWorkspaceId:
+          description: ID of the workspace of the source resource for this clone
+          type: string
+          format: uuid
+        sourceResourceId:
+          description: ID of the source resource
+          type: string
+          format: uuid
+        bucket:
+          $ref: "#/components/schemas/CreatedControlledAzureStorageContainer"
+    CloneControlledAzureStorageContainerResult:
+      description: >-
+        API result class for cloning a Azure Storage container.
+      type: object
+      properties:
+        bucket:
+          $ref: '#/components/schemas/ClonedControlledAzureStorageContainer'
+        jobReport:
+          $ref: '#/components/schemas/JobReport'
+        errorReport:
+          $ref: '#/components/schemas/ErrorReport'
+    CloneReferencedAzureStorageContainerResourceResult:
+      description: >-
+        API result class for cloning a referenced Azure Storage container resource. Includes source workspace
+        and resource IDs for provenance. If the effective cloning instructions are not
+        COPY_REFERENCE, then no clone is created and the resource is null.
+      type: object
+      properties:
+        effectiveCloningInstructions:
+          $ref: '#/components/schemas/CloningInstructionsEnum'
+        sourceWorkspaceId:
+          description: ID of the workspace of the source resource for this clone
+          type: string
+          format: uuid
+        sourceResourceId:
+          description: ID of the source resource
+          type: string
+          format: uuid
+        resource:
+          $ref: '#/components/schemas/AzureStorageContainerResource'
+
     ### DEPRECATED SCHEMAS ###
     # TODO(PF-404): remove this in favor of reference-type specific objects.
     CreateDataReferenceRequestBody:
@@ -1429,6 +1839,55 @@ components:
           $ref: '#/components/schemas/DataRepoSnapshot'
         cloningInstructions:
           $ref: '#/components/schemas/CloningInstructionsEnum'
+
+    AzureStorageContainerReferenceResponse:
+      description: Response containing a reference to a Azure Storage container.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AzureStorageContainerResource'
+
+    CreatedControlledAzureStorageContainerResponse:
+      description: Response to Create controlled Azure Storage container
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedControlledAzureStorageContainer'
+
+    ClonedControlledAzureStorageContainerResponse:
+      description: Response to Azure Storage container clone operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CloneControlledAzureStorageContainerResult'
+
+    DeleteControlledAzureStorageContainerResponse:
+      description: Response Payload for deleting a Azure Storage container
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeleteControlledAzureStorageContainerResult'
+
+    GetControlledAzureStorageContainerResponse:
+      description: Response to get bucket
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AzureStorageContainerResource'
+    UpdateControlledAzureStorageContainerResponse:
+      description: Reponse to Azure Storage container update.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AzureStorageContainerResource' # TODO:  add other attributes
+
+    CloneReferencedAzureStorageContainerResourceResponse:
+      description: Response for successful Azure Storage container reference clone
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CloneReferencedAzureStorageContainerResourceResult'
+
 
     # TODO(PF-404): remove this in favor of reference-type specific objects.
     DataReferenceRequestMetadata:
@@ -3040,6 +3499,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorReport'
+
 
   securitySchemes:
     bearerAuth:
