@@ -44,6 +44,7 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
         managedBy);
     this.storageAccountName = storageAccountName;
     this.containerName = containerName;
+    this.azureEnvironment = azureEnvironment;
     validate();
   }
 

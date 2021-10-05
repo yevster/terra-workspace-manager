@@ -116,5 +116,4 @@ public class AzureCloudContext {
       result.azureEnvironment = azureEnvironment;
       return result;
     }
-  }
 }
