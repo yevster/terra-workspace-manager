@@ -3,10 +3,12 @@ package bio.terra.workspace.service.resource;
 import bio.terra.common.exception.ValidationException;
 import bio.terra.workspace.generated.model.ApiResourceType;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
+import bio.terra.workspace.service.resource.controlled.azure.ControlledAzureStorageContainerResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.resource.referenced.ReferencedResource;
+import bio.terra.workspace.service.resource.referenced.azure.ReferencedAzureStorageContainerResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedBigQueryDatasetResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedDataRepoSnapshotResource;
 import bio.terra.workspace.service.resource.referenced.gcp.ReferencedGcsBucketResource;
@@ -39,7 +41,15 @@ public enum WsmResourceType {
       "BIG_QUERY_DATASET",
       ApiResourceType.BIG_QUERY_DATASET,
       ReferencedBigQueryDatasetResource.class,
-      ControlledBigQueryDatasetResource.class);
+      ControlledBigQueryDatasetResource.class),
+
+  AZURE_STORAGE_CONTAINER(
+      CloudPlatform.AZURE,
+      "AZURE_STORAGE_CONTAINER",
+      ApiResourceType.AZURE_STORAGE_CONTAINER,
+      ReferencedAzureStorageContainerResource.class,
+      ControlledAzureStorageContainerResource.class
+  );
 
   private final CloudPlatform cloudPlatform;
   private final String dbString; // serialized form of the resource type

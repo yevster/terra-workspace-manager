@@ -2232,6 +2232,11 @@ components:
       type: object
       description: The azure cloud context associated with a workspace.
       properties:
+        azureEnvironment:
+          description: The name of the Azure environment associated with the workspace. If unspecified, "AZURE" will be used.
+          type: string
+          required: false
+          enum: [ AZURE, AZURE_GERMANY, AZURE_CHINA, AZURE_US_GOVERNMENT ]
         tenantId:
           description: The ID of Azure tenant associated with the workspace.
           type: string
@@ -3270,6 +3275,7 @@ components:
         - BIG_QUERY_DATASET
         - DATA_REPO_SNAPSHOT
         - GCS_BUCKET
+        - AZURE_STORAGE_CONTAINER
 
     StewardshipType:
       description: Enum containing valid stewardship types. Used for enumeration

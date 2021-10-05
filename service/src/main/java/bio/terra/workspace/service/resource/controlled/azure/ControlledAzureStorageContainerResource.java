@@ -18,6 +18,8 @@ import java.util.UUID;
 
 public class ControlledAzureStorageContainerResource extends ControlledResource {
   private final String containerName;
+  private final String storageAccountName;
+  private final String azureEnvironment;
 
   @JsonCreator
   public ControlledAzureStorageContainerResource(
@@ -29,7 +31,9 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
       @JsonProperty("assignedUser") String assignedUser,
       @JsonProperty("accessScope") AccessScopeType accessScope,
       @JsonProperty("managedBy") ManagedByType managedBy,
-      @JsonProperty("containerName") String containerName) {
+      @JsonProperty("storageAccountName") String storageAccountName,
+      @JsonProperty("containerName") String containerName,
+      @JsonProperty("azureEnvironment") String azureEnvironment) {
 
     super(
         workspaceId,
@@ -40,7 +44,9 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
         assignedUser,
         accessScope,
         managedBy);
+    this.storageAccountName = storageAccountName;
     this.containerName = containerName;
+    this.azureEnvironment = azureEnvironment;
     validate();
   }
 
@@ -50,6 +56,8 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
         DbSerDes.fromJson(
             dbResource.getAttributes(), ControlledAzureStorageContainerAttributes.class);
     this.containerName = attributes.getContainerName();
+    this.storageAccountName = attributes.getStorageAccountName();
+    this.azureEnvironment = attributes.getAzureEnvironment();
     validate();
   }
 
@@ -60,6 +68,12 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
   public String getContainerName() {
     return containerName;
   }
+
+  public String getAzureEnvironment() {
+    return azureEnvironment;
+  }
+
+  public String getStorageAccountName() { return storageAccountName; }
 
   public ApiGcpGcsBucketAttributes toApiAttributes() {
     return new ApiGcpGcsBucketAttributes().bucketName(getContainerName());
@@ -78,7 +92,7 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
 
   @Override
   public String attributesToJson() {
-    return DbSerDes.toJson(new ControlledAzureStorageContainerAttributes(getContainerName()));
+    return DbSerDes.toJson(new ControlledAzureStorageContainerAttributes(getStorageAccountName(), getContainerName(), getAzureEnvironment()));
   }
 
   @Override
@@ -120,7 +134,9 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
     private String assignedUser;
     private AccessScopeType accessScope;
     private ManagedByType managedBy;
-    private String bucketName;
+    private String containerName;
+    private String storageAccountName;
+    private String azureEnvironment = "AZURE";
 
     public Builder workspaceId(UUID workspaceId) {
       this.workspaceId = workspaceId;
@@ -147,8 +163,18 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
       return this;
     }
 
-    public Builder bucketName(String bucketName) {
-      this.bucketName = bucketName;
+    public Builder containerName(String containerName) {
+      this.containerName = containerName;
+      return this;
+    }
+
+    public Builder storageAccountName(String storageAccountName) {
+      this.storageAccountName = storageAccountName;
+      return this;
+    }
+
+    public Builder azureEnviornment(String azureEnvironment){
+      this.azureEnvironment = azureEnvironment;
       return this;
     }
 
@@ -177,13 +203,15 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
           assignedUser,
           accessScope,
           managedBy,
-          bucketName);
+          storageAccountName,
+          containerName,
+          azureEnvironment);
     }
   }
 
   // Double-checked down casts when we need to re-specialize from a ControlledResource
   public static ControlledAzureStorageContainerResource cast(ControlledResource resource) {
-    validateSubclass(resource, WsmResourceType.GCS_BUCKET);
+    validateSubclass(resource, WsmResourceType.AZURE_STORAGE_CONTAINER);
     return (ControlledAzureStorageContainerResource) resource;
   }
 }
