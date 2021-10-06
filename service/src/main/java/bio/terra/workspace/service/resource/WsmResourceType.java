@@ -48,8 +48,7 @@ public enum WsmResourceType {
       "AZURE_STORAGE_CONTAINER",
       ApiResourceType.AZURE_STORAGE_CONTAINER,
       ReferencedAzureStorageContainerResource.class,
-      ControlledAzureStorageContainerResource.class
-  );
+      ControlledAzureStorageContainerResource.class);
 
   private final CloudPlatform cloudPlatform;
   private final String dbString; // serialized form of the resource type

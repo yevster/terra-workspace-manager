@@ -6,14 +6,11 @@ import bio.terra.workspace.db.DbSerDes;
 import bio.terra.workspace.db.model.DbResource;
 import bio.terra.workspace.generated.model.ApiAzureStorageContainerAttributes;
 import bio.terra.workspace.generated.model.ApiAzureStorageContainerResource;
-import bio.terra.workspace.generated.model.ApiGcpGcsBucketAttributes;
-import bio.terra.workspace.generated.model.ApiGcpGcsBucketResource;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
-import bio.terra.workspace.service.resource.controlled.flight.create.azure.AzureConfigurationUtilities;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -68,12 +65,14 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
     return containerName;
   }
 
-  public String getStorageAccountName() { return storageAccountName; }
+  public String getStorageAccountName() {
+    return storageAccountName;
+  }
 
   public ApiAzureStorageContainerAttributes toApiAttributes() {
     return new ApiAzureStorageContainerAttributes()
-            .containerName(getContainerName())
-            .storageAccountName(getStorageAccountName());
+        .containerName(getContainerName())
+        .storageAccountName(getStorageAccountName());
   }
 
   public ApiAzureStorageContainerResource toApiResource() {
@@ -89,7 +88,8 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
 
   @Override
   public String attributesToJson() {
-    return DbSerDes.toJson(new ControlledAzureStorageContainerAttributes(getStorageAccountName(), getContainerName()));
+    return DbSerDes.toJson(
+        new ControlledAzureStorageContainerAttributes(getStorageAccountName(), getContainerName()));
   }
 
   @Override
