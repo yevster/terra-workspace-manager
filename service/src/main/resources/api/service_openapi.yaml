@@ -1603,10 +1603,8 @@ components:
         This list does not include legacy types that apply to some existing buckets.
       type: string
       enum:
-        - STANDARD
-        - NEARLINE
-        - COLDLINE
-        - ARCHIVE
+        - HOT
+        - COOL
     AzureStorageContainerLifecycle:
       description: >-
         Options to control automatic deletion or storage class change for a bucket.

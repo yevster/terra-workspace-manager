@@ -12,6 +12,7 @@ import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.storage.StorageManager;
+import com.azure.resourcemanager.storage.models.AccessTier;
 import com.azure.resourcemanager.storage.models.PublicAccess;
 import com.azure.resourcemanager.storage.models.StorageAccountCreateParameters;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class CreateAzureStorageContainerStep implements Step {
         final var azureContext = workspaceService.getAzureCloudContext(resource.getWorkspaceId()).orElseThrow(() -> new AzureContextRequiredException("Azure not configured"));
         final var storageManager = AzureConfigurationUtilities.getAzureStorageManager(azureContext);
 
+
+
         //Create storage account if needed
         final var storageAccountClient = storageManager.serviceClient().getStorageAccounts();
         var storageAccount = storageAccountClient.getByResourceGroup(azureContext.getAzureResourceGroupId(), resource.getStorageAccountName());
@@ -51,9 +54,9 @@ public class CreateAzureStorageContainerStep implements Step {
                     resource.getStorageAccountName(), azureContext.getAzureResourceGroupId());
             return new StepResult(StepStatus.STEP_RESULT_FAILURE_FATAL);
         } else {
-            StorageAccountCreateParameters params = new StorageAccountCreateParameters();
-            //TODO: Add additional parameters (e.g. scope)
             try {
+                StorageAccountCreateParameters params = new StorageAccountCreateParameters();
+                params.withAccessTier(AccessTier.valueOf(creationParameters.getDefaultStorageClass().name()));
                 storageAccountClient.create(
                         azureContext.getAzureResourceGroupId(),
                         resource.getStorageAccountName(),
