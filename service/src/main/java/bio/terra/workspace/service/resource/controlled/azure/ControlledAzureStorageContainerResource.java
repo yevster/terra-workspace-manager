@@ -4,6 +4,8 @@ import bio.terra.common.exception.InconsistentFieldsException;
 import bio.terra.common.exception.MissingRequiredFieldException;
 import bio.terra.workspace.db.DbSerDes;
 import bio.terra.workspace.db.model.DbResource;
+import bio.terra.workspace.generated.model.ApiAzureStorageContainerAttributes;
+import bio.terra.workspace.generated.model.ApiAzureStorageContainerResource;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketAttributes;
 import bio.terra.workspace.generated.model.ApiGcpGcsBucketResource;
 import bio.terra.workspace.service.resource.ValidationUtils;
@@ -11,6 +13,7 @@ import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.controlled.AccessScopeType;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.ManagedByType;
+import bio.terra.workspace.service.resource.controlled.flight.create.azure.AzureConfigurationUtilities;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,7 +22,6 @@ import java.util.UUID;
 public class ControlledAzureStorageContainerResource extends ControlledResource {
   private final String containerName;
   private final String storageAccountName;
-  private final String azureEnvironment;
 
   @JsonCreator
   public ControlledAzureStorageContainerResource(
@@ -32,8 +34,7 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
       @JsonProperty("accessScope") AccessScopeType accessScope,
       @JsonProperty("managedBy") ManagedByType managedBy,
       @JsonProperty("storageAccountName") String storageAccountName,
-      @JsonProperty("containerName") String containerName,
-      @JsonProperty("azureEnvironment") String azureEnvironment) {
+      @JsonProperty("containerName") String containerName) {
 
     super(
         workspaceId,
@@ -46,7 +47,6 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
         managedBy);
     this.storageAccountName = storageAccountName;
     this.containerName = containerName;
-    this.azureEnvironment = azureEnvironment;
     validate();
   }
 
@@ -57,7 +57,6 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
             dbResource.getAttributes(), ControlledAzureStorageContainerAttributes.class);
     this.containerName = attributes.getContainerName();
     this.storageAccountName = attributes.getStorageAccountName();
-    this.azureEnvironment = attributes.getAzureEnvironment();
     validate();
   }
 
@@ -69,30 +68,28 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
     return containerName;
   }
 
-  public String getAzureEnvironment() {
-    return azureEnvironment;
-  }
-
   public String getStorageAccountName() { return storageAccountName; }
 
-  public ApiGcpGcsBucketAttributes toApiAttributes() {
-    return new ApiGcpGcsBucketAttributes().bucketName(getContainerName());
+  public ApiAzureStorageContainerAttributes toApiAttributes() {
+    return new ApiAzureStorageContainerAttributes()
+            .containerName(getContainerName())
+            .storageAccountName(getStorageAccountName());
   }
 
-  public ApiGcpGcsBucketResource toApiResource() {
-    return new ApiGcpGcsBucketResource()
+  public ApiAzureStorageContainerResource toApiResource() {
+    return new ApiAzureStorageContainerResource()
         .metadata(super.toApiMetadata())
         .attributes(toApiAttributes());
   }
 
   @Override
   public WsmResourceType getResourceType() {
-    return WsmResourceType.GCS_BUCKET;
+    return WsmResourceType.AZURE_STORAGE_CONTAINER;
   }
 
   @Override
   public String attributesToJson() {
-    return DbSerDes.toJson(new ControlledAzureStorageContainerAttributes(getStorageAccountName(), getContainerName(), getAzureEnvironment()));
+    return DbSerDes.toJson(new ControlledAzureStorageContainerAttributes(getStorageAccountName(), getContainerName()));
   }
 
   @Override
@@ -173,11 +170,6 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
       return this;
     }
 
-    public Builder azureEnviornment(String azureEnvironment){
-      this.azureEnvironment = azureEnvironment;
-      return this;
-    }
-
     public Builder assignedUser(String assignedUser) {
       this.assignedUser = assignedUser;
       return this;
@@ -204,8 +196,7 @@ public class ControlledAzureStorageContainerResource extends ControlledResource 
           accessScope,
           managedBy,
           storageAccountName,
-          containerName,
-          azureEnvironment);
+          containerName);
     }
   }
 

@@ -6,16 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ControlledAzureStorageContainerAttributes {
     private final String containerName;
     private final String storageAccountName;
-    private final String azureEnvironment;
 
     @JsonCreator
     public ControlledAzureStorageContainerAttributes(
             @JsonProperty("storageAccount") String storageAccountName,
-            @JsonProperty("container") String containerName,
-            @JsonProperty("azureEnvironment") String azureEnvironment) {
+            @JsonProperty("container") String containerName) {
         this.storageAccountName = storageAccountName;
         this.containerName = containerName;
-        this.azureEnvironment = azureEnvironment;
     }
 
     public String getContainerName() {
@@ -26,7 +23,4 @@ public class ControlledAzureStorageContainerAttributes {
         return storageAccountName;
     }
 
-    public String getAzureEnvironment() {
-        return azureEnvironment;
-    }
 }
