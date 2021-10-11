@@ -9,7 +9,9 @@ import bio.terra.workspace.service.resource.exception.DuplicateResourceException
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GcpResourceUniquenessValidationDao {
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
