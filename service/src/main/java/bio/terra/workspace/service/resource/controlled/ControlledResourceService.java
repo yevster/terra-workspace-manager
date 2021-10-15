@@ -12,7 +12,7 @@ import bio.terra.workspace.service.job.JobBuilder;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.job.JobService;
 import bio.terra.workspace.service.resource.controlled.flight.create.CreateControlledResourceFlight;
-import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteControlledResourceFlight;
+import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.DeleteControlledResourceFlight;
 import bio.terra.workspace.service.stage.StageService;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;

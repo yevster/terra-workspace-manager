@@ -19,7 +19,7 @@ import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.common.BaseUnitTest;
 import bio.terra.workspace.generated.model.ApiGcpBigQueryDatasetUpdateParameters;
 import bio.terra.workspace.service.crl.CrlService;
-import bio.terra.workspace.service.resource.controlled.flight.update.UpdateBigQueryDatasetStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.gcs.UpdateBigQueryDatasetStep;
 import bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.workspace.WorkspaceService;

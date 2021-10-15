@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.delete;
+package bio.terra.workspace.service.resource.controlled.flight.delete.gcp;
 
 import bio.terra.cloudres.google.storage.BucketCow;
 import bio.terra.cloudres.google.storage.StorageCow;

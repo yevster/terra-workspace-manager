@@ -23,7 +23,7 @@ import bio.terra.stairway.StepResult;
 import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.common.BaseUnitTest;
 import bio.terra.workspace.service.crl.CrlService;
-import bio.terra.workspace.service.resource.controlled.flight.update.UpdateGcsBucketStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.gcs.UpdateGcsBucketStep;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;

@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcs;
 
 import bio.terra.stairway.Flight;
 import bio.terra.stairway.FlightMap;
@@ -7,6 +7,8 @@ import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.common.utils.RetryRules;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
+import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.UpdateControlledResourceMetadataStep;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 
 public class UpdateControlledBigQueryDatasetResourceFlight extends Flight {

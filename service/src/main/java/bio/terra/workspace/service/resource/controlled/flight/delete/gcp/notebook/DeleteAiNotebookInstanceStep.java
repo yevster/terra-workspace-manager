@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.delete.notebook;
+package bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook;
 
 import bio.terra.cloudres.google.notebooks.AIPlatformNotebooksCow;
 import bio.terra.cloudres.google.notebooks.InstanceName;

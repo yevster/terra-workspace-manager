@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcs;
 
 import static bio.terra.workspace.service.resource.controlled.gcp.BigQueryApiConversions.fromBqExpirationTime;
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.PREVIOUS_UPDATE_PARAMETERS;

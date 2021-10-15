@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcp;
 
 import bio.terra.cloudres.google.storage.BucketCow;
 import bio.terra.cloudres.google.storage.StorageCow;

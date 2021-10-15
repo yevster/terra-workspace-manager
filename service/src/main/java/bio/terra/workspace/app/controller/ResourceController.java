@@ -171,6 +171,7 @@ public class ResourceController implements ResourceApi {
               union.gcpBqDataset(resource.toApiAttributes(gcpProjectId));
               break;
             }
+
           case DATA_REPO_SNAPSHOT: // there is a use case for this, but low priority
             throw new InternalLogicException(
                 "Unimplemented controlled resource type: " + wsmResource.getResourceType());

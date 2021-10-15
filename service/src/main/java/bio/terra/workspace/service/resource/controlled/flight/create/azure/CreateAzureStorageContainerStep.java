@@ -37,7 +37,7 @@ public class CreateAzureStorageContainerStep implements Step {
         workspaceService
             .getAzureCloudContext(resource.getWorkspaceId())
             .orElseThrow(() -> new AzureContextRequiredException("Azure not configured"));
-    final var storageManager = AzureConfigurationUtilities.getAzureStorageManager(azureContext);
+    final var storageManager = azureContext.getAzureStorageManager();
 
     // Create storage account if needed
     final var storageAccountClient = storageManager.serviceClient().getStorageAccounts();
@@ -80,6 +80,7 @@ public class CreateAzureStorageContainerStep implements Step {
     if (existingContainer != null) {
       logger.info("Storage container {} already exists. Continuing.");
     } else {
+      //TODO: verify parity to GCP
       var containerLevelPublicAccess =
           resource.getAccessScope() == AccessScopeType.ACCESS_SCOPE_SHARED
               ? PublicAccess.CONTAINER
@@ -102,7 +103,7 @@ public class CreateAzureStorageContainerStep implements Step {
         workspaceService
             .getAzureCloudContext(resource.getWorkspaceId())
             .orElseThrow(() -> new AzureContextRequiredException("Azure not configured"));
-    final var storageManager = AzureConfigurationUtilities.getAzureStorageManager(azureContext);
+    final var storageManager = azureContext.getAzureStorageManager();
     storageManager
         .blobContainers()
         .delete(

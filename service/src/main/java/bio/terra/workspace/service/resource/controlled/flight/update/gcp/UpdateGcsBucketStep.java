@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcp;
 
 import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGcsApi;
 import static bio.terra.workspace.service.resource.controlled.gcp.GcsApiConversions.toGcsApiRulesList;

@@ -1,11 +1,13 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcp;
 
 import bio.terra.stairway.Flight;
 import bio.terra.stairway.FlightMap;
 import bio.terra.workspace.common.utils.FlightBeanBag;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
-import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
+import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.UpdateControlledResourceMetadataStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.gcp.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 
 public class UpdateControlledGcsBucketResourceFlight extends Flight {

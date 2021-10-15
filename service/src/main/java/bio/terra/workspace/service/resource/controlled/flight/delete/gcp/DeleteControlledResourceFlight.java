@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.delete;
+package bio.terra.workspace.service.resource.controlled.flight.delete.gcp;
 
 import bio.terra.stairway.Flight;
 import bio.terra.stairway.FlightMap;
@@ -10,9 +10,11 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.exception.ControlledResourceNotImplementedException;
-import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.DeleteAiNotebookInstanceStep;
-import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.DeleteServiceAccountStep;
-import bio.terra.workspace.service.resource.controlled.flight.delete.notebook.RetrieveNotebookServiceAccountStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteMetadataStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteSamResourceStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.DeleteAiNotebookInstanceStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.DeleteServiceAccountStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.RetrieveNotebookServiceAccountStep;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledAiNotebookInstanceResource;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledBigQueryDatasetResource;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys;

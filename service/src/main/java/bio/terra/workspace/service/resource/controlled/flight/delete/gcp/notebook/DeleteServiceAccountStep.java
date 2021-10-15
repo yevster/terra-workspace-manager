@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.delete.notebook;
+package bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook;
 
 import static bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys.DELETE_NOTEBOOK_SERVICE_ACCOUNT_EMAIL;
 

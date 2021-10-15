@@ -1,4 +1,4 @@
-package bio.terra.workspace.service.resource.controlled.flight.update;
+package bio.terra.workspace.service.resource.controlled.flight.update.gcs;
 
 import bio.terra.cloudres.google.bigquery.BigQueryCow;
 import bio.terra.stairway.FlightContext;

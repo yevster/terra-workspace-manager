@@ -74,7 +74,7 @@ dependencies {
     implementation group: "com.google.auth", name: "google-auth-library-oauth2-http", version: "0.25.5"
 
     //Azure Storage Service
-    implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.14.0'
+    implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.14.1'
     implementation group: 'com.azure', name: 'azure-identity', version: '1.3.6'
     implementation group: 'com.azure.resourcemanager', name: 'azure-resourcemanager', version: '2.8.0'
 
