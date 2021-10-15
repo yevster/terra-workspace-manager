@@ -80,7 +80,7 @@ public class CreateAzureStorageContainerStep implements Step {
     if (existingContainer != null) {
       logger.info("Storage container {} already exists. Continuing.");
     } else {
-      //TODO: verify parity to GCP
+      // TODO: verify parity to GCP
       var containerLevelPublicAccess =
           resource.getAccessScope() == AccessScopeType.ACCESS_SCOPE_SHARED
               ? PublicAccess.CONTAINER

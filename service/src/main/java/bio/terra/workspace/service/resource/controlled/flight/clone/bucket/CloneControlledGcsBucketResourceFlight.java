@@ -7,8 +7,8 @@ import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.job.JobMapKeys;
 import bio.terra.workspace.service.resource.controlled.ControlledResource;
 import bio.terra.workspace.service.resource.controlled.flight.update.RetrieveControlledResourceMetadataStep;
-import bio.terra.workspace.service.resource.controlled.flight.update.gcs.RetrieveGcsBucketCloudAttributesStep;
-import bio.terra.workspace.service.resource.controlled.flight.update.gcs.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
+import bio.terra.workspace.service.resource.controlled.flight.update.gcp.RetrieveGcsBucketCloudAttributesStep;
+import bio.terra.workspace.service.resource.controlled.flight.update.gcp.RetrieveGcsBucketCloudAttributesStep.RetrievalMode;
 import bio.terra.workspace.service.resource.controlled.gcp.ControlledGcsBucketResource;
 
 public class CloneControlledGcsBucketResourceFlight extends Flight {

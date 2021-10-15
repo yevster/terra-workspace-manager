@@ -36,9 +36,9 @@ import bio.terra.workspace.service.resource.controlled.flight.create.notebook.Cr
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.NotebookCloudSyncStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.RetrieveNetworkNameStep;
 import bio.terra.workspace.service.resource.controlled.flight.create.notebook.ServiceAccountPolicyStep;
-import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.DeleteBigQueryDatasetStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteMetadataStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.DeleteSamResourceStep;
+import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.DeleteBigQueryDatasetStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.DeleteAiNotebookInstanceStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.DeleteServiceAccountStep;
 import bio.terra.workspace.service.resource.controlled.flight.delete.gcp.notebook.RetrieveNotebookServiceAccountStep;
